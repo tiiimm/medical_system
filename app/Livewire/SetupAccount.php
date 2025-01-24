@@ -3,15 +3,19 @@
 namespace App\Livewire;
 
 use App\Models\Campus;
+use App\Models\College;
 use App\Models\MedicalProfile;
 use App\Models\Profile;
+use App\Models\Program;
 use App\Models\StudentInformation;
 use Livewire\Component;
 
 class SetupAccount extends Component
 {
     public $step = 1; // Initial step
-    public $campuses;
+    public $campuses = [];
+    public $colleges = [];
+    public $programs = [];
 
     public $last_name;
     public $first_name;
@@ -22,16 +26,16 @@ class SetupAccount extends Component
     public $city;
     public $province;
     public $contact_number;
-    public $campus_id;
-    public $college;
-    public $course;
+    public $campus_id = 0;
+    public $college_id = 0;
+    public $program_id = 0;
     public $major;
     public $student_number;
-    public $year_level;
-    public $status;
+    public $year_level = 0;
+    public $status = 0;
     public $birthdate;
-    public $sex;
-    public $blood_type;
+    public $sex = 0;
+    public $blood_type = 0;
     public $allergies;
     public $medical_history;
 
@@ -45,9 +49,9 @@ class SetupAccount extends Component
         'city' => 'required|string|max:255',
         'province' => 'required|string|max:255',
         'contact_number' => 'required|numeric|min:10',
-        'campus_id' => 'required|int',
-        'college' => 'required|string|max:255',
-        'course' => 'required|string|max:255',
+        'campus_id' => 'required|integer|exists:campuses,id',
+        'college_id' => 'required|integer|exists:colleges,id',
+        'program_id' => 'required|integer|exists:programs,id',
         'student_number' => 'required|string|max:255',
         'major' => 'nullable|string|max:255',
         'year_level' => 'required|string|max:50',
@@ -64,17 +68,34 @@ class SetupAccount extends Component
         $this->campuses = Campus::select('id', 'name')->get();
     }
 
+    public function updatedCampusId()
+    {
+        if ($this->campus_id != 1) {
+            $this->colleges = College::where('id', 7)->select('id', 'name')->get();
+        } else {
+            $this->colleges = College::where('id', '!=', 7)->select('id', 'name')->get();
+        }
+        $this->programs = [];
+        $this->program_id = 0;
+        $this->college_id = 0;
+    }
+
+    public function updatedCollegeId()
+    {
+        $this->program_id = 0;
+        $this->programs = Program::where('college_id', $this->college_id)->select('id', 'name')->get();
+
+    }
+
     public function store()
     {
         $user = auth()->user();
-        // Validate the input data
-        $validatedData = $this->validate();
+        $this->validate();
 
         $user->update([
             'name' => trim($this->last_name . ', ' . $this->first_name . ' ' . ($this->middle_name ? $this->middle_name . ' ' : '') . ($this->extension_name ? $this->extension_name : '')),
         ]);
 
-        // Save data in the PersonalInformation table
         $profile = Profile::create([
             'user_id' => $user->id,
             'last_name' => $this->last_name,
@@ -86,18 +107,16 @@ class SetupAccount extends Component
             'zppsu_number' => $this->student_number,
         ]);
 
-        // Save data in the StudentInformation table
         $studentInfo = StudentInformation::create([
             'user_id' => $user->id,
             'campus_id' => $this->campus_id,
-            'college' => $this->college,
-            'course' => $this->course,
+            'college_id' => $this->college_id,
+            'program_id' => $this->program_id,
             'major' => $this->major,
             'year_level' => $this->year_level,
             'status' => $this->status,
         ]);
 
-        // Save data in the MedicalProfile table
         $medicalProfile = MedicalProfile::create([
             'profile_id' => $profile->id,
             'birthdate' => $this->birthdate,
@@ -107,9 +126,7 @@ class SetupAccount extends Component
             'medical_history' => $this->medical_history,
         ]);
 
-        // Optionally, you can associate these records with a user or another entity
 
-        // Redirect to dashboard
         $this->js("alert('Done setting up!')");
 
         return redirect('/dashboard')->with('first_access', true);

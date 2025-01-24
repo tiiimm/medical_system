@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id');
             $table->foreignId('campus_id');
             $table->foreignId('program_id');
-            $table->string('major')->nullable();
+            $table->string('major')->nullable()->default('NA');
             $table->enum('year_level',['1st year', '2nd year', '3rd year', '4th year']);
             $table->enum('status', ['Regular', 'Irregular']);
             $table->timestamps();

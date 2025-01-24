@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('campuses', function (Blueprint $table) {
             $table->id();
             $table->string('name')->nullable();
-            $table->string('location');
+            $table->string('address');
+            $table->boolean('is_active')->default(1);
             $table->timestamps();
         });
     }

@@ -17,7 +17,15 @@ class StudentInformation extends Model
         return $this->belongsTo(Program::class);
     }
 
+    public function user() {
+        return $this->belongsTo(User::class);
+    }
+
     public function campus() {
         return $this->belongsTo(Campus::class);
+    }
+
+    public function medical_results() {
+        return $this->hasMany(MedicalResults::class);
     }
 }

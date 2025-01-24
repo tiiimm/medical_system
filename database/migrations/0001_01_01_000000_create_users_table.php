@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('username')->nullable();
             $table->string('password');
             $table->string('role')->default('student');
-            $table->string('is_active')->default(1);
+            $table->boolean('is_active')->default(1);
             $table->rememberToken();
             $table->timestamps();
         });

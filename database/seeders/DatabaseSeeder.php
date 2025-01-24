@@ -20,5 +20,13 @@ class DatabaseSeeder extends Seeder
         $this->call(ProgramSeeder::class);
         $this->call(UserSeeder::class);
         Appointment::factory(10)->create();
+
+
+        User::factory(1)->create([
+            'name' => 'administrator',
+            'email' => 'administrator@medical.com',
+            'role' => 'administrator',
+            'password' => 'secret',
+        ]);
     }
 }

@@ -95,40 +95,48 @@
                                         <div class="row mt-4">
                                             <div class="col-6">
                                                 <div class="relative">
-                                                    <select wire:model.blur="campus_id" class="form-select border border-1 p-2 ps-2" data-style="select-with-transition" title="" data-size="100" id="campus">
-                                                        <option value="">Select Campus</option>
+                                                    <select wire:model.live="campus_id" class="form-select border border-1 p-2 px-2-5" data-style="select-with-transition" title="" data-size="100" id="campus">
+                                                        <option value="0" disabled selected class="placeholder">Select Campus</option>
                                                         @foreach($campuses as $campus)
                                                             <option value="{{ $campus->id }}">{{ $campus->name }}</option>
                                                         @endforeach
                                                     </select>
                                                     @error('campus_id')
-                                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                                    <p class='text-danger inputerror'>Select a campus</p>
                                                     @enderror
                                                 </div>
                                             </div>
                                             <div class="col-6">
-                                                <div class="input-group input-group-outline @if(strlen($college ?? '') > 0) is-filled @endif">
-                                                    <label class="form-label">College</label>
-                                                    <input wire:model.live="college" type="text" class="form-control">
+                                                <div class="relative">
+                                                    <select wire:model.live="college_id" class="form-select border border-1 p-2 px-2-5" data-style="select-with-transition" title="" data-size="100" id="college">
+                                                        <option value="0" disabled selected class="placeholder">Select College</option>
+                                                        @foreach($colleges as $college)
+                                                            <option value="{{ $college->id }}">{{ $college->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                    @error('college_id')
+                                                    <p class='text-danger inputerror'>Select a college</p>
+                                                    @enderror
                                                 </div>
-                                                @error('college')
-                                                <p class='text-danger inputerror'>{{ $message }}</p>
-                                                @enderror
                                             </div>
                                         </div>
                                         <div class="row mt-4">
                                             <div class="col-6">
-                                                <div class="input-group input-group-outline @if(strlen($course ?? '') > 0) is-filled @endif">
-                                                    <label class="form-label">Course</label>
-                                                    <input wire:model.live="course" type="text" class="form-control">
+                                                <div class="relative">
+                                                    <select wire:model.live="program_id" class="form-select border border-1 p-2 px-2-5" data-style="select-with-transition" title="" data-size="100" id="program">
+                                                        <option value="0" disabled selected class="placeholder">Select Program</option>
+                                                        @foreach($programs as $program)
+                                                            <option value="{{ $program->id }}">{{ $program->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                    @error('program_id')
+                                                    <p class='text-danger inputerror'>Select a program</p>
+                                                    @enderror
                                                 </div>
-                                                @error('course')
-                                                <p class='text-danger inputerror'>{{ $message }}</p>
-                                                @enderror
                                             </div>
                                             <div class="col-6">
                                                 <div class="input-group input-group-outline @if(strlen($major ?? '') > 0) is-filled @endif">
-                                                    <label class="form-label">Major</label>
+                                                    <label class="form-label">Major (leave blank if none)</label>
                                                     <input wire:model.live="major" type="text" class="form-control">
                                                 </div>
                                                 @error('major')
@@ -148,27 +156,27 @@
                                             </div>
                                             <div class="col-4">
                                                 <div class="relative">
-                                                    <select wire:model.blur="year_level" class="form-select border border-1 p-2 ps-2" data-style="select-with-transition" title="" data-size="100" id="campus">
-                                                        <option value="">Select Year Level</option>
+                                                    <select wire:model.live="year_level" class="form-select border border-1 p-2 px-2-5" data-style="select-with-transition" title="" data-size="100" id="campus">
+                                                        <option value="0" disabled selected class="placeholder">Select Year Level</option>
                                                         <option value="1st year">1st year</option>
                                                         <option value="2nd year">2nd year</option>
                                                         <option value="3rd year">3rd year</option>
                                                         <option value="4th year">4th year</option>
                                                     </select>
                                                     @error('year_level')
-                                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                                    <p class='text-danger inputerror'>{{ $message }}</p>
                                                     @enderror
                                                 </div>
                                             </div>
                                             <div class="col-4">
                                                 <div class="relative">
-                                                    <select wire:model.blur="status" class="form-select border border-1 p-2 ps-2" data-style="select-with-transition" title="" data-size="100" id="campus">
-                                                        <option value="">Select Status</option>
+                                                    <select wire:model.live="status" class="form-select border border-1 p-2 px-2-5" data-style="select-with-transition" title="" data-size="100" id="campus">
+                                                        <option value="0" disabled selected class="placeholder">Select Status</option>
                                                         <option value="Regular">Regular</option>
                                                         <option value="Irregular">Irregular</option>
                                                     </select>
                                                     @error('status')
-                                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                                    <p class='text-danger inputerror'>{{ $message }}</p>
                                                     @enderror
                                                 </div>
                                             </div>
@@ -187,20 +195,20 @@
                                             </div>
                                             <div class="col-3">
                                                 <div class="relative">
-                                                    <select wire:model.blur="sex" class="form-select border border-1 p-2 ps-2" data-style="select-with-transition" title="" data-size="100" id="campus">
-                                                        <option value="">Select sex</option>
+                                                    <select wire:model.live="sex" class="form-select border border-1 p-2 px-2-5" data-style="select-with-transition" title="" data-size="100" id="sex">
+                                                        <option value="0" disabled selected class="placeholder">Select sex</option>
                                                         <option value="Male">Male</option>
                                                         <option value="Female">Female</option>
                                                     </select>
                                                     @error('sex')
-                                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                                    <p class='text-danger inputerror'>{{ $message }}</p>
                                                     @enderror
                                                 </div>
                                             </div>
                                             <div class="col-3">
                                                 <div class="relative">
-                                                    <select wire:model.blur="blood_type" class="form-select border border-1 p-2 ps-2" data-style="select-with-transition" title="" data-size="100" id="campus">
-                                                        <option value="">Select Blood Type</option>
+                                                    <select wire:model.live="blood_type" class="form-select border border-1 p-2 px-2-5" data-style="select-with-transition" title="" data-size="100" id="campus">
+                                                        <option value="0" disabled selected class="placeholder">Select Blood Type</option>
                                                         <option value="A+">A+</option>
                                                         <option value="A-">A-</option>
                                                         <option value="B+">B+</option>
@@ -211,7 +219,7 @@
                                                         <option value="O-">O-</option>
                                                     </select>
                                                     @error('blood_type')
-                                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                                    <p class='text-danger inputerror'>{{ $message }}</p>
                                                     @enderror
                                                 </div>
                                             </div>

@@ -15,23 +15,23 @@ class CampusSeeder extends Seeder
     {
         Campus::create([
             'name' => 'Main Campus',
-            'location' => 'Baliwasan Chico'
+            'address' => 'Baliwasan Chico'
         ]);
         Campus::create([
             'name' => 'Siay Campus',
-            'location' => 'Siay'
+            'address' => 'Siay'
         ]);
         Campus::create([
             'name' => 'Kabasalan Campus',
-            'location' => 'Kabasalan'
+            'address' => 'Kabasalan'
         ]);
         Campus::create([
             'name' => 'Malangas Campus',
-            'location' => 'Malangas'
+            'address' => 'Malangas'
         ]);
         Campus::create([
             'name' => 'Vitali Campus',
-            'location' => 'Vitali'
+            'address' => 'Vitali'
         ]);
     }
 }
