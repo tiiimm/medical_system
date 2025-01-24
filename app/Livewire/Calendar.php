@@ -3,7 +3,8 @@
 namespace App\Livewire;
 
 use Carbon\Carbon;
-use App\Models\Appointment; // Import the Appointment model
+use App\Models\Appointment;
+use App\Models\SystemSetting;
 use Livewire\Component;
 
 class Calendar extends Component
@@ -13,9 +14,21 @@ class Calendar extends Component
     public $calendar = [];
     public $eventSchedule = '';
     public $eventDate = '';
+    public $medicalStartDate;
+    public $medicalEndDate;
 
     public function mount()
     {
+        $systemSettings = SystemSetting::first();
+
+        if ($systemSettings) {
+            $this->medicalStartDate = Carbon::parse($systemSettings->medical_start);
+            $this->medicalEndDate = Carbon::parse($systemSettings->medical_end);
+        } else {
+            $this->medicalStartDate = null;
+            $this->medicalEndDate = null;
+        }
+
         $this->currentMonth = now()->month;
         $this->currentYear = now()->year;
         $this->generateCalendar();
@@ -40,7 +53,7 @@ class Calendar extends Component
                     'day' => $currentDate->day,
                     'is_today' => $currentDate->isToday(),
                     'is_current_month' => $currentDate->month === $this->currentMonth,
-                    'events' => $this->getEventsForDay($currentDate),
+                    'events' => $this->isWithinMedicalDateRange($currentDate) ? $this->getEventsForDay($currentDate) : [],
                 ];
                 $currentDate->addDay();
             }
@@ -50,41 +63,63 @@ class Calendar extends Component
         $this->calendar = $weeks;
     }
 
-    public function getEventsForDay(Carbon $specific_date)
+    public function isWithinMedicalDateRange(Carbon $specificDate): bool
     {
-        if ($specific_date->lt(today())) {
-            return []; // No events for past dates
+        if (!$this->medicalStartDate || !$this->medicalEndDate) {
+            return false;
+        }
+
+        return $specificDate->between($this->medicalStartDate, $this->medicalEndDate);
+    }
+
+    public function getEventsForDay(Carbon $specificDate)
+    {
+        if ($specificDate->isSunday()) {
+            return [];
+        }
+    
+        if (!$this->isWithinMedicalDateRange($specificDate)) {
+            return [];
         }
 
         $events = [];
-        $totalSlotsPerDay = 250; // Default total slots (am + pm)
+        $totalSlotsPerDay = 250; 
 
-        // Check booked slots for each schedule (AM and PM)
         foreach (['am', 'pm'] as $schedule) {
-            // Get the count of booked appointments for this schedule
-            $bookedAppointments = Appointment::where('appointment_date', $specific_date->toDateString())
-                ->where('appointment_schedule', strtoupper($schedule)) // Assuming schedule is stored as 'AM' or 'PM'
-                // ->where('status', 'pending') // Assuming 'booked' is the status of confirmed appointments
+            $bookedAppointments = Appointment::where('appointment_date', $specificDate->toDateString())
+                ->where('appointment_schedule', strtoupper($schedule))    
                 ->count();
 
             $remainingSlots = $totalSlotsPerDay - $bookedAppointments;
 
-            // Add event if there are remaining slots
             if ($remainingSlots > 0) {
-                $events[$specific_date->toDateString()][] = [
+                $events[] = [
                     'title' => ucfirst($schedule) . " - {$remainingSlots} slots left",
                     'type' => 'primary',
                     'schedule' => strtoupper($schedule),
-                    'date' => $specific_date->toDateString(),
+                    'date' => $specificDate->toDateString(),
                 ];
             }
         }
 
-        return $events[$specific_date->toDateString()] ?? [];
+        return $events;
     }
 
     public function triggerModal($eventSchedule, $eventDate)
     {
+        $user = auth()->user();
+        
+        $existingAppointment = Appointment::where('user_id', $user->id)
+            ->where('school_year', now()->format('Y') . '-' . (now()->format('Y') + 1))
+            ->where('semester', '1st Semester')
+            ->where('status', '!=', 'Missed')
+            ->first();
+
+        if ($existingAppointment) {
+            $this->js("alert('You can only book one appointment per semester unless you missed your previous appointment.')");
+            return;
+        }
+
         $this->eventSchedule = $eventSchedule;
         $this->eventDate = $eventDate;
 

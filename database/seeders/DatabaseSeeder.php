@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Appointment;
 use App\Models\Campus;
+use App\Models\SystemSetting;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -27,6 +28,12 @@ class DatabaseSeeder extends Seeder
             'email' => 'administrator@medical.com',
             'role' => 'administrator',
             'password' => 'secret',
+        ]);
+        SystemSetting::create([
+            'semester' => '2nd Semester',
+            'school_year' => '2024-2025',
+            'medical_start' => '2024-01-02',
+            'medical_end' => '2024-01-15',
         ]);
     }
 }

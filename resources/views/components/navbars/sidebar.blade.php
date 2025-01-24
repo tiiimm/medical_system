@@ -89,15 +89,6 @@
             </li>
             @elseif(auth()->user()->hasRole('student'))
             <li class="nav-item">
-                <a class="nav-link text-white {{ Route::currentRouteName() == 'medical-records' ? ' active bg-gradient-primary' : '' }} "
-                    href="{{ route('medical-records') }}">
-                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="material-icons opacity-10">description</i>
-                    </div>
-                    <span class="nav-link-text ms-1">Medical Records</span>
-                </a>
-            </li>
-            <li class="nav-item">
                 <a class="nav-link text-white {{ Route::currentRouteName() == 'book-appointment' ? ' active bg-gradient-primary' : '' }} "
                     href="{{ route('book-appointment') }}">
                     <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -107,21 +98,21 @@
                 </a>
             </li>
             <li class="nav-item">
+                <a class="nav-link text-white {{ Route::currentRouteName() == 'medical-records' ? ' active bg-gradient-primary' : '' }} "
+                    href="{{ route('medical-records') }}">
+                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="material-icons opacity-10">description</i>
+                    </div>
+                    <span class="nav-link-text ms-1">Medical Records</span>
+                </a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link text-white {{ Route::currentRouteName() == 'appointment-history' ? ' active bg-gradient-primary' : '' }} "
                     href="{{ route('appointment-history') }}">
                     <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
                         <i class="material-icons opacity-10">list</i>
                     </div>
                     <span class="nav-link-text ms-1">Transaction History</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-white {{ Route::currentRouteName() == 'student-list/medical-records' ? ' active bg-gradient-primary' : '' }} "
-                    href="{{ route('student-list/medical-records') }}">
-                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="material-icons opacity-10">description</i>
-                    </div>
-                    <span class="nav-link-text ms-1">Medical Records</span>
                 </a>
             </li>
             @endif

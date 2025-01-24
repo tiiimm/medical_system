@@ -26,7 +26,7 @@ class AppointmentFactory extends Factory
             'appointment_schedule' => fake()->randomElement(['AM', 'PM']),
             'school_year' => '2024-2025',
             'semester' => '2nd',
-            'status' => 'PENDING',
+            'status' => 'Pending',
             'remarks' => fake()->sentence(),
             'purpose' => fake()->sentence(),
         ];
