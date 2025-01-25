@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('medical_profiles', function (Blueprint $table) {
+        Schema::create('allergies', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('profile_id');
-            $table->string('birthdate');
-            $table->string('sex');
-            $table->string('blood_type');
+            $table->foreignId('medical_profile_id');
+            $table->string('allergy_name'); 
+            $table->text('triggers')->nullable(); 
+            $table->boolean('is_active')->default(true); 
+            $table->date('last_occurred')->nullable(); 
             $table->timestamps();
         });
     }
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('medical_profiles');
+        Schema::dropIfExists('allergies');
     }
 };

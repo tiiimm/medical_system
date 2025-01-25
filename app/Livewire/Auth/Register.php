@@ -12,6 +12,7 @@ class Register extends Component
     public $username = '';
     public $email = '';
     public $password = '';
+    public $termsAccepted = false;
 
     protected $rules=[
     'username' => 'required|min:6',
@@ -20,6 +21,12 @@ class Register extends Component
 
 
     public function store(){
+
+        if (!$this->termsAccepted) {
+            // You can return an error message or prevent the form submission.
+            $this->js("alert('You must agree to the terms and conditions')");
+            return;
+        }
 
         $attributes = $this->validate();
 

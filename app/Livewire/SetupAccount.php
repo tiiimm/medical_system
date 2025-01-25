@@ -2,8 +2,10 @@
 
 namespace App\Livewire;
 
+use App\Models\Allergy;
 use App\Models\Campus;
 use App\Models\College;
+use App\Models\MedicalHistory;
 use App\Models\MedicalProfile;
 use App\Models\Profile;
 use App\Models\Program;
@@ -36,8 +38,15 @@ class SetupAccount extends Component
     public $birthdate;
     public $sex = 0;
     public $blood_type = 0;
-    public $allergies;
-    public $medical_history;
+
+    public $allergies = []; 
+    public $allergy_name = ''; 
+    public $triggers = '';
+    public $condition_name = '';
+    public $treatment = 0;
+    public $is_chronic = false;
+    public $last_checkup = '';
+    public $medical_histories = [];
 
     protected $rules = [
         'last_name' => 'required|string|max:255',
@@ -59,13 +68,64 @@ class SetupAccount extends Component
         'birthdate' => 'required|date',
         'sex' => 'required|string|max:50',
         'blood_type' => 'required|string|max:10',
-        'allergies' => 'required|string|max:1000',
-        'medical_history' => 'required|string|max:1000',
     ];
     
     public function mount()
     {
         $this->campuses = Campus::select('id', 'name')->get();
+    }
+    
+    public function addAllergy()
+    {
+        $this->validate([
+            'allergy_name' => 'required|string',
+            'triggers' => 'nullable|string',
+        ]);
+
+        $this->allergies[] = [
+            'allergy_name' => $this->allergy_name,
+            'triggers' => $this->triggers,
+        ];
+
+        // Clear the input fields after adding
+        $this->allergy_name = '';
+        $this->triggers = '';
+    }
+
+    public function removeAllergy($index)
+    {
+        unset($this->allergies[$index]);
+        $this->allergies = array_values($this->allergies);
+    }
+    
+    public function addMedicalHistory()
+    {
+        $this->validate([
+            'condition_name' => 'required|string|max:255',
+            'treatment' => 'nullable|string|max:255',
+            'is_chronic' => 'required|boolean',
+            'last_checkup' => 'nullable|date',
+        ]);
+
+        $this->medical_histories[] = [
+            'condition_name' => $this->condition_name,
+            'treatment' => $this->treatment,
+            'is_chronic' => $this->is_chronic,
+            'last_checkup' => $this->last_checkup,
+        ];
+
+        // Clear the input fields after adding
+        $this->condition_name = '';
+        $this->treatment = '';
+        $this->is_chronic = false;
+        $this->last_checkup = '';
+    }
+
+    // Remove Medical History
+    public function removeMedicalHistory($index)
+    {
+        unset($this->medical_histories[$index]);
+        $this->medical_histories = array_values($this->medical_histories);
     }
 
     public function updatedCampusId()
@@ -121,10 +181,25 @@ class SetupAccount extends Component
             'profile_id' => $profile->id,
             'birthdate' => $this->birthdate,
             'sex' => $this->sex,
-            'blood_type' => $this->blood_type,
-            'allergies' => $this->allergies,
-            'medical_history' => $this->medical_history,
+            'blood_type' => $this->blood_type
         ]);
+
+        foreach ($this->medical_histories as $medical_history) {
+            MedicalHistory::create([
+                'medical_profile_id' => $medicalProfile->id,
+                'condition_name' => $medical_history['condition_name'],
+                'treatment' => 'Ongoing',
+                'is_chronic' => $medical_history['is_chronic'],
+            ]);
+        }
+
+        foreach ($this->allergies as $allergy) {
+            Allergy::create([
+                'medical_profile_id' => $medicalProfile->id,
+                'allergy_name' => $allergy['allergy_name'],
+                'triggers' => $allergy['triggers'],
+            ]);
+        }
 
 
         $this->js("alert('Done setting up!')");

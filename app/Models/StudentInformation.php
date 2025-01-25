@@ -24,8 +24,9 @@ class StudentInformation extends Model
     public function campus() {
         return $this->belongsTo(Campus::class);
     }
-
-    public function medical_results() {
-        return $this->hasMany(MedicalResults::class);
+    
+    public function medical_results()
+    {
+        return $this->hasManyThrough(MedicalResults::class, Appointment::class, 'user_id', 'appointment_id', 'user_id', 'id');
     }
 }

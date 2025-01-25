@@ -14,6 +14,8 @@ class Calendar extends Component
     public $calendar = [];
     public $eventSchedule = '';
     public $eventDate = '';
+    public $semester;
+    public $school_year;
     public $medicalStartDate;
     public $medicalEndDate;
 
@@ -22,9 +24,13 @@ class Calendar extends Component
         $systemSettings = SystemSetting::first();
 
         if ($systemSettings) {
+            $this->semester = $systemSettings->semester;
+            $this->school_year = $systemSettings->school_year;
             $this->medicalStartDate = Carbon::parse($systemSettings->medical_start);
             $this->medicalEndDate = Carbon::parse($systemSettings->medical_end);
         } else {
+            $this->semester = null;
+            $this->school_year = null;
             $this->medicalStartDate = null;
             $this->medicalEndDate = null;
         }
@@ -108,10 +114,10 @@ class Calendar extends Component
     public function triggerModal($eventSchedule, $eventDate)
     {
         $user = auth()->user();
-        
+
         $existingAppointment = Appointment::where('user_id', $user->id)
-            ->where('school_year', now()->format('Y') . '-' . (now()->format('Y') + 1))
-            ->where('semester', '1st Semester')
+            ->where('school_year', $this->school_year)
+            ->where('semester', $this->semester)
             ->where('status', '!=', 'Missed')
             ->first();
 

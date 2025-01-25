@@ -75,10 +75,10 @@ class MedicalRecords extends Component
         $qrCodeUrl = base64_encode($qrCodeBinary->getString());
 
         $pdf = PDF::loadView('pdf.medical-certificate', [
-            'studentName' => $medicalResult->student_information->user->name,
-            'yearLevel' => $medicalResult->student_information->year_level,
-            'course' => $medicalResult->student_information->program->name,
-            'dateReleased' => now()->toFormattedDateString(),
+            'studentName' => $medicalResult->appointment->student_information->user->name,
+            'yearLevel' => $medicalResult->appointment->student_information->year_level,
+            'course' => $medicalResult->appointment->student_information->program->name,
+            'dateReleased' => $medicalResult->appointment->appointment_date,
             'qrCodeUrl' => $qrCodeUrl,
         ]);
     

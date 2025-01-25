@@ -21,8 +21,6 @@ class MedicalProfileFactory extends Factory
             'birthdate'=>fake()->dateTimeBetween('-30 years', '-15 years')->format('Y-m-d'),
             'sex'=>fake()->randomElement(['Male', 'Female']),
             'blood_type'=>fake()->randomElement(['A', 'B', 'AB', 'O', 'A-', 'B-', 'AB-', 'O-']),
-            'allergies'=>fake()->sentence(),
-            'medical_history' => collect(fake()->words(20))->join(' '),
         ];
     }
 

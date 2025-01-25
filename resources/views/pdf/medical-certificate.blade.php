@@ -40,7 +40,6 @@
             a <strong>{{ $yearLevel }} year</strong> {{ $course }} student of this university
             has undergone a medical examination on<br>
             <h3>{{ $dateReleased }}</h3><br>
-            and has been found fit for academic activities.<br>
             <br><br>
             _______________________<br>
             Authorized Medical Officer<br>

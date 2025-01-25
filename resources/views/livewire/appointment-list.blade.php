@@ -7,8 +7,18 @@
                         <h4 class="text-white mx-3"><strong>Appointment List</strong></h6>
                     </div>
                 </div>
-                <div class=" me-3 my-3 text-end">
-                    <a class="btn bg-gradient-dark mb-0" href="javascript:;"><i class="material-icons text-sm">add</i>&nbsp;&nbsp;Add New Record</a>
+                <div class="row align-items-center justify-content-end mb-3">
+                    <div class="col-auto">
+                        <div class="form-check form-switch d-flex align-items-center me-3">
+                            <input class="form-check-input" type="checkbox" id="toggle" wire:click="toggleShowTodayOnly">
+                            <label class="form-check-label mb-0 ms-2" for="toggle">Show Today Only</label>
+                        </div>
+                    </div>
+                    <div class="col-auto me-3 my-3 text-end">
+                        <a class="btn bg-gradient-dark mb-0" href="javascript:;">
+                            <i class="material-icons text-sm">add</i>&nbsp;&nbsp;Add New Record
+                        </a>
+                    </div>
                 </div>
                 <div class="card-body-fit px-0 pb-2">
                     <div class="table-responsive p-0">
@@ -20,7 +30,13 @@
                                         ID
                                     </th>
                                     <th
-                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" style="width:10%;">
+                                        APPOINTMENT DATE</th>
+                                    <th
+                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" style="width:10%;">
+                                        APPOINTMENT NUMBER</th>
+                                    <th
+                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" style="width:10%;">
                                         STUDENT NUMBER</th>
                                     <th
                                         class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
@@ -28,9 +44,6 @@
                                     <th
                                         class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                         CONTACT NUMBER</th>
-                                    <th
-                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                        COLLEGE</th>
                                     <th
                                         class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                         COURSE</th>
@@ -48,6 +61,16 @@
                                             <p class="mb-0 text-sm">{{$index + 1}}</p>
                                         </div>
                                     </td>
+                                    <td class="align-middle text-sm">
+                                        <div class="d-flex flex-column justify-content-center">
+                                            <p class="mb-0 text-xs">{{ $appointment->appointment_date }} {{ $appointment->appointment_schedule }}</p>
+                                        </div>
+                                    </td>
+                                    <td class="align-middle text-sm">
+                                        <div class="d-flex flex-column justify-content-center">
+                                            <p class="mb-0 text-xs">{{ $appointment->appointment_number }}</p>
+                                        </div>
+                                    </td>
                                     <td class="align-middle text-center">
                                         <div class="d-flex flex-column justify-content-center">
                                             <h6 class="mb-0 text-sm">{{ $appointment->student_number }}</h6>
@@ -62,24 +85,25 @@
                                         <p class="text-xs text-secondary mb-0">{{ $appointment->user->profile->contact_number }}</p>
                                     </td>
                                     <td class="align-middle text-sm">
-                                        <p class="text-xs text-secondary mb-0">{{ $appointment->studentInformation->program->college->abbreviation }}</p>
-                                    </td>
-                                    <td class="align-middle text-sm">
-                                        <p class="text-xs text-secondary mb-0">{{ $appointment->studentInformation->program->abbreviation }}</p>
+                                        <p class="text-xs text-secondary mb-0">{{ $appointment->student_information->program->abbreviation }}</p>
                                     </td>
                                     <td class="align-middle text-sm">
                                         <p class="text-xs text-secondary mb-0">{{ $appointment->status }}</p>
                                     </td>
                                     <td class="align-middle">
                                         <!-- Update Status Button -->
+                                        @if($appointment['status'] != 'Result Posted')
                                         <a wire:click="openStatusUpdateModal('{{ $appointment['id'] }}')" class="btn btn-warning btn-link"
                                            data-original-title="Update Status" title="Update Status">
                                             <i class="material-icons">update</i>
                                         </a>
+                                        @endif
+                                        @if(auth()->check() && auth()->user()->hasRole('medical staff') && $appointment['status'] === 'Waiting for result')
                                         <a wire:click="showDetails('{{ $appointment['id'] }}')" class="btn btn-secondary btn-link"
                                            data-original-title="Update Status" title="Update Status">
                                             <i class="material-icons">east</i>
                                         </a>
+                                        @endif
                                     </td>
                                 </tr>
                                 @endforeach

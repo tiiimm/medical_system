@@ -36,9 +36,9 @@ class Dashboard extends Component
         $this->uticasesCount = MedicalResults::where('urinalysis_abnormality', 'uti')
             ->where('school_year', now()->month <= 6 ? (now()->year - 1) . '-' . now()->year : now()->year . '-' . (now()->year + 1))
             ->where('semester', now()->month <= 6 ? '2nd sem' : '1st sem')
-            ->with('student_information')
+            ->with('appointment.student_information')
             ->get()
-            ->groupBy('student_information.campus_id')
+            ->groupBy('appointment.student_information.campus_id')
             ->mapWithKeys(function ($items, $campusId) {
                 return [$campusId => $items->count()]; // Count items per campus
             });
@@ -46,9 +46,9 @@ class Dashboard extends Component
         $this->drugPositiveCount = MedicalResults::where('drugtest_result', 'positive')
             ->where('school_year', now()->month <= 6 ? (now()->year - 1) . '-' . now()->year : now()->year . '-' . (now()->year + 1))
             ->where('semester', now()->month <= 6 ? '2nd sem' : '1st sem')
-            ->with('student_information')
+            ->with('appointment.student_information')
             ->get()
-            ->groupBy('student_information.campus_id')
+            ->groupBy('appointment.student_information.campus_id')
             ->mapWithKeys(function ($items, $campusId) {
                 return [$campusId => $items->count()]; // Count items per campus
             });

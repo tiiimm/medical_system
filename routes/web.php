@@ -28,7 +28,8 @@ use App\Livewire\ProgramList;
 use App\Livewire\AppointmentHistory;
 use App\Livewire\BookAppointment;
 use App\Livewire\AppointmentList;
-use App\Livewire\AppointmentResult;
+use App\Livewire\SystemSettings;
+use App\Livewire\AppointmentList\AppointmentResult;
 
 Route::get('/', Landing::class)->middleware('guest')->name('landing');
 
@@ -50,6 +51,7 @@ Route::group(['middleware' => 'auth'], function () {
 
         return $next($request);
     }], function () {
+        Route::get('system-settings', SystemSettings::class)->name('system-settings');
         Route::get('user-profile', UserProfile::class)->name('user-profile');
         Route::get('user-management', UserManagement::class)->name('user-management');
         Route::get('campus-list', CampusList::class)->name('campus-list');

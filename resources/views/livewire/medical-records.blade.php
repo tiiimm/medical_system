@@ -24,7 +24,6 @@
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">HEMATOLOGY</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">URINALYSIS</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">XRAY</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">ISHIHARA</th>
                                     <th class="text-secondary opacity-7"></th>
                                 </tr>
                             </thead>
@@ -59,9 +58,6 @@
                                     </td>
                                     <td class="align-middle text-center text-sm">
                                         <p class="text-xs text-secondary mb-0">{{ $medical_result->xray_result }}</p>
-                                    </td>
-                                    <td class="align-middle text-center text-sm">
-                                        <p class="text-xs text-secondary mb-0">{{ $medical_result->ishihara_result }}</p>
                                     </td>
                                     <td class="align-middle">
                                         <a wire:click="downloadFile('{{ $medical_result['id'] }}')" class="btn btn-success btn-link"
@@ -121,10 +117,6 @@
                     <p>
                         <strong>X-ray Result:</strong> {{ $selectedMedicalRecord->xray_result }}{{ $selectedMedicalRecord->xray_result=='normal'?'':', ' }}{{ $selectedMedicalRecord->xray_abnormality }}<br>
                         <strong>X-ray Remarks:</strong> {{ $selectedMedicalRecord->xray_remarks??'None' }}
-                    </p>
-                    <p>
-                        <strong>Ishihara Result:</strong> {{ $selectedMedicalRecord->ishihara_result }}{{ $selectedMedicalRecord->ishihara_result=='normal'?'':', ' }}{{ $selectedMedicalRecord->ishihara_abnormality }}<br>
-                        <strong>Ishihara Remarks:</strong> {{ $selectedMedicalRecord->ishihara_remarks??'None' }}
                     </p>
                     <br>
                     <p><strong>General Condition:</strong> {{ $selectedMedicalRecord->condition??'None' }}</p>

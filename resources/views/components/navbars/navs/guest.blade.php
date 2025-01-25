@@ -35,17 +35,25 @@
             </ul>
             <ul class="navbar-nav d-lg-flex">
                 <li class="nav-item">
-                    <a class="nav-link me-2" href="{{ in_array(request()->route()->getName(), ['register','login', 'password.forgot','reset-password']) ? route('register') : 'static-sign-up' }}">
+                    <a class="nav-link me-2" href="{{route('medical-lookup') }}">
+                        <i class="fas fa-search opacity-6 text-white me-1"></i>
+                        Student Medical Lookup
+                    </a>
+                </li>
+                @guest
+                <li class="nav-item">
+                    <a class="nav-link me-2" href="{{ route('register') }}">
                         <i class="fas fa-user-circle opacity-6 text-white me-1"></i>
                         Sign Up
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link me-2" href="{{ in_array(request()->route()->getName(), ['register','login', 'password.forgot','reset-password']) ? route('login') : 'static-sign-in' }}">
+                    <a class="nav-link me-2" href="{{ route('login') }}">
                         <i class="fas fa-key opacity-6 text-white me-1"></i>
                         Sign In
                     </a>
                 </li>
+                @endguest
             </ul>
             @else
             <ul class="navbar-nav ms-auto">

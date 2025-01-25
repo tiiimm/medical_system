@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Appointment;
+use App\Models\SystemSetting;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -14,8 +15,8 @@ class BookAppointment extends Component
         $user = auth()->user();
 
         $existingAppointment = Appointment::where('user_id', $user->id)
-            ->where('school_year', now()->format('Y') . '-' . (now()->format('Y') + 1))
-            ->where('semester', '1st Semester')
+            ->where('school_year', SystemSetting::first()->school_year)
+            ->where('semester', SystemSetting::first()->semester)
             ->where('status', '!=', 'Missed')
             ->first();
 
@@ -31,8 +32,8 @@ class BookAppointment extends Component
             'appointment_number' => $appointmentNumber,
             'appointment_date' => $date,
             'appointment_schedule' => $schedule,
-            'school_year' => now()->format('Y') . '-' . (now()->format('Y') + 1),
-            'semester' => '1st Semester',
+            'school_year' => SystemSetting::first()->school_year,
+            'semester' => SystemSetting::first()->semester,
             'status' => 'Pending',
         ]);
     

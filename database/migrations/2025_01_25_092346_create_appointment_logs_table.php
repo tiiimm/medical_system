@@ -11,12 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('medical_profiles', function (Blueprint $table) {
+        Schema::create('appointment_logs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('profile_id');
-            $table->string('birthdate');
-            $table->string('sex');
-            $table->string('blood_type');
+            $table->foreignId('appointment_id');
+            $table->string('status');
+            $table->foreignId('updated_by')->index();
             $table->timestamps();
         });
     }
@@ -26,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('medical_profiles');
+        Schema::dropIfExists('appointment_logs');
     }
 };

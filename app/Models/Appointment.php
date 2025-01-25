@@ -21,9 +21,17 @@ class Appointment extends Model
         'purpose'
     ];
 
-    public function studentInformation()
+    public function student_information()
     {
         return $this->hasOneThrough(StudentInformation::class, User::class, 'id', 'user_id', 'user_id', 'id');
+    }
+
+    public function medical_results() {
+        return $this->hasMany(MedicalResults::class);
+    }
+
+    public function logs() {
+        return $this->hasMany(AppointmentLog::class);
     }
 
     public function user()

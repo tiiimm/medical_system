@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\StudentList;
+namespace App\Livewire\AppointmentList;
 
 use App\Models\MedicalResults;
 use Livewire\Component;
@@ -10,10 +10,11 @@ use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
 use Illuminate\Support\Facades\Crypt;
 
-class NewMedicalResult extends Component
+class AppointmentResult extends Component
 {
     use WithFileUploads;
     
+    public $selectedAppointment;
     public $selectedUser;
 
     public $hematology_result = 'Normal';
@@ -66,7 +67,7 @@ class NewMedicalResult extends Component
         }
 
         // Example of storing data (adjust to your database structure)
-        $medical_result = $this->selectedUser->student_information->medical_results()->create([
+        $medical_result = $this->selectedAppointment->medical_results()->create([
             'hematology_result' => $this->hematology_result,
             'hematology_abnormality' => $this->hematology_abnormality,
             'hematology_remarks' => $this->hematology_remarks,
@@ -93,19 +94,30 @@ class NewMedicalResult extends Component
         ]);
 
         session()->flash('success', 'Medical results saved successfully!');
-        $this->js("alert('Done setting up!')");
-        return $this->generateCertificate($medical_result->id);
-        return redirect('/student-list')->with(true);
+        $this->js("alert('Medical results saved successfully!')");
+
+        $this->selectedAppointment->update([
+            'status' => 'Result Posted'
+        ]);
+        $this->selectedAppointment->logs()->create([
+            'status' => 'Result Posted',
+            'updated_by' =>auth()->user()->id
+        ]);
+
+        $this->sendSms($this->formatPhoneNumber($this->selectedAppointment->student_information->user->profile->contact_number),$medical_result);
+
+        return redirect('/appointment-list')->with(true);
     }
 
     public function mount()
     {
-        // Check if selectedUser exists in the session
-        $this->selectedUser = session('selectedUser');
+        // Check if selectedAppointment exists in the session
+        $this->selectedAppointment = session('selectedAppointment');
+        $this->selectedUser = $this->selectedAppointment->student_information->user;
 
         // If no user is selected, redirect back to the user list page
-        if (!$this->selectedUser) {
-            return redirect()->route('student-list')->with('error', 'No student selected.');
+        if (!$this->selectedAppointment) {
+            return redirect()->route('appointment-list')->with('error', 'No student selected.');
         }
     }
 
@@ -125,9 +137,9 @@ class NewMedicalResult extends Component
         $qrCodeUrl = base64_encode($qrCodeBinary->getString());
 
         $pdf = PDF::loadView('pdf.medical-certificate', [
-            'studentName' => $medicalResult->student_information->user->name,
-            'yearLevel' => $medicalResult->student_information->year_level,
-            'course' => $medicalResult->student_information->program->name,
+            'studentName' => $medicalResult->appointment->student_information->user->name,
+            'yearLevel' => $medicalResult->appointment->student_information->year_level,
+            'course' => $medicalResult->appointment->student_information->program->name,
             'dateReleased' => $medicalResult->appointment->appointment_date,
             'qrCodeUrl' => $qrCodeUrl,
         ]);
@@ -140,8 +152,48 @@ class NewMedicalResult extends Component
         // // return $pdf->download('medical-certificate.pdf');
     }
 
+    function formatPhoneNumber($phoneNumber)
+    {
+        if (substr($phoneNumber, 0, 2) === '09' && strlen($phoneNumber) === 11) {
+            return '+63' . substr($phoneNumber, 1);
+        }
+
+        return $phoneNumber;
+    }
+
+    private function sendSms($contactNumber, $medical_result)
+    {
+        $sid = getenv('TWILIO_ACCOUNT_SID');
+        $authToken = getenv('TWILIO_AUTH_TOKEN');
+        $from = '+13613154818';
+        $to = $contactNumber;
+    
+        $url = 'https://api.twilio.com/2010-04-01/Accounts/' . $sid . '/Messages.json';
+    
+        $data = [
+            'To' => $to,
+            'From' => $from,
+            'Body' => 'This is to inform you that your results have been posted. You may check the portal to view your results',
+        ];
+    
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_USERPWD, $sid . ':' . $authToken);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+        
+        $response = curl_exec($ch);
+        curl_close($ch);
+        
+        if ($response === false) {
+            $this->js('Twilio SMS Error: ' . curl_error($ch));
+        }
+        $this->generateCertificate($medical_result->id);
+    }
+
     public function render()
     {
-        return view('livewire.student-list.new-medical-result');
+        return view('livewire.appointment-list.result');
     }
 }

@@ -225,23 +225,149 @@
                                             </div>
                                         </div>
 
+                                        <h6 class="text-black font-weight-bolder text-start my-4">Part 4. Allergies</h6>
                                         <div class="row mt-4">
-                                            <div class="col-6">
-                                                <div class="input-group input-group-outline @if(strlen($allergies ?? '') > 0) is-filled @endif">
-                                                    <textarea wire:model.live="allergies" class="form-control" rows="4" placeholder="Enter your allergies"></textarea>
+                                            <div class="col-5">
+                                                <div class="input-group input-group-outline @if(strlen($allergy_name ?? '') > 0) is-filled @endif">
+                                                    <label class="form-label">Allergy Name</label>
+                                                    <input wire:model.live="allergy_name" type="text" class="form-control">
                                                 </div>
-                                                @error('allergies')
+                                                @error('allergy_name')
                                                 <p class='text-danger inputerror'>{{ $message }}</p>
                                                 @enderror
                                             </div>
-                                            <div class="col-6">
-                                                <div class="input-group input-group-outline @if(strlen($medical_history ?? '') > 0) is-filled @endif">
-                                                    <textarea wire:model.live="medical_history" class="form-control" rows="4" placeholder="Enter your medical history"></textarea>
+                                            <div class="col-5">
+                                                <div class="input-group input-group-outline @if(strlen($triggers ?? '') > 0) is-filled @endif">
+                                                    <label class="form-label">Triggers (Optional)</label>
+                                                    <input wire:model.live="triggers" type="text" class="form-control">
                                                 </div>
-                                                @error('medical_history')
+                                                @error('triggers')
                                                 <p class='text-danger inputerror'>{{ $message }}</p>
                                                 @enderror
                                             </div>
+                                            <div class="col-2">
+                                                <div class="text-center">
+                                                    <button wire:click="addAllergy" type="button" class="btn bg-gradient-primary mb-2">Add</button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Display the list of allergies -->
+                                        <div class="mt-4 mx-6">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Allergy Name</th>
+                                                        <th>Triggers</th>
+                                                        <th>Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @forelse($allergies as $index => $allergy)
+                                                        <tr>
+                                                            <td>{{ $allergy['allergy_name'] }}</td>
+                                                            <td>{{ $allergy['triggers'] ?? 'None' }}</td>
+                                                            <td>
+                                                                <button wire:click="removeAllergy({{ $index }})" class="btn btn-danger btn-sm">Remove</button>
+                                                            </td>
+                                                        </tr>
+                                                    @empty
+                                                    <tr>
+                                                        <td colspan="12" class="text-center">
+                                                            <p class="text-sm text-muted my-2">No allergies listed</p>
+                                                        </td>
+                                                    </tr>
+                                                    @endforelse
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <h6 class="text-black font-weight-bolder text-start my-4">Part 5. Medical Histories</h6>
+                                        <div class="row mt-4">
+                                            <div class="col-3">
+                                                <div class="input-group input-group-outline @if(strlen($condition_name ?? '') > 0) is-filled @endif">
+                                                    <label class="form-label">Condition Name</label>
+                                                    <input wire:model.live="condition_name" type="text" class="form-control">
+                                                </div>
+                                                @error('condition_name')
+                                                <p class='text-danger inputerror'>{{ $message }}</p>
+                                                @enderror
+                                            </div>
+
+                                            <div class="col-3">
+                                                <div class="input-group input-group-outline @if(strlen($treatment ?? '') > 0) is-filled @endif">
+                                                    <select wire:model.live="treatment" class="form-select border border-1 p-2 px-2-5" data-style="select-with-transition" title="" data-size="100" id="sex">
+                                                        <option value="0" disabled selected class="placeholder">Select Treatment</option>
+                                                        <option value="Ongoing">Ongoing</option>
+                                                        <option value="Resolved">Resolved</option>
+                                                        <option value="In remission">In remission</option>
+                                                    </select>
+                                                </div>
+                                                @error('treatment')
+                                                <p class='text-danger inputerror'>{{ $message }}</p>
+                                                @enderror
+                                            </div>
+
+                                            <div class="col-2">
+                                                <div class="input-group input-group-outline @if(strlen($last_checkup ?? '') > 0) is-filled @endif">
+                                                    <label class="form-label">Last Checkup</label>
+                                                    <input wire:model.live="last_checkup" type="date" class="form-control">
+                                                </div>
+                                                @error('last_checkup')
+                                                <p class='text-danger inputerror'>{{ $message }}</p>
+                                                @enderror
+                                            </div>
+
+                                            <div class="col-2">
+                                                <div class="input-group input-group-outline @if($is_chronic) is-filled @endif">
+                                                    <div class="form-check">
+                                                        <input wire:model.live="is_chronic" class="form-check-input" type="checkbox" id="is_chronic">
+                                                        <label class="form-check-label" for="is_chronic">
+                                                            Chronic Condition
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-2">
+                                                <div class="text-center">
+                                                    <button wire:click="addMedicalHistory" type="button" class="btn bg-gradient-primary mb-2">Add</button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Display the list of medical histories -->
+                                        <div class="mt-4 mx-6">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Condition Name</th>
+                                                        <th>Treatment</th>
+                                                        <th>Chronic</th>
+                                                        <th>Last Checkup</th>
+                                                        <th>Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @forelse($medical_histories as $index => $history)
+                                                        <tr>
+                                                            <td>{{ $history['condition_name'] }}</td>
+                                                            <td>{{ $history['treatment'] ?? 'N/A' }}</td>
+                                                            <td>{{ $history['is_chronic'] ? 'Yes' : 'No' }}</td>
+                                                            <td>{{ $history['last_checkup'] ? \Carbon\Carbon::parse($history['last_checkup'])->format('d/m/Y') : 'N/A' }}</td>
+                                                            <td>
+                                                                <button wire:click="removeMedicalHistory({{ $index }})" class="btn btn-danger btn-sm">Remove</button>
+                                                            </td>
+                                                        </tr>
+                                                    @empty
+                                                    <tr>
+                                                        <td colspan="12" class="text-center">
+                                                            <p class="text-sm text-muted my-2">No allergies listed</p>
+                                                        </td>
+                                                    </tr>
+                                                    @endforelse
+                                                </tbody>
+                                            </table>
                                         </div>
 
                                         <div class="text-center">

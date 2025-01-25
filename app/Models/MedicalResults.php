@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class MedicalResults extends Model
 {
     protected $fillable = [
-        'student_information_id',
+        'appointment_id',
         'hematology_result',
         'hematology_abnormality',
         'hematology_remarks',
@@ -33,8 +33,13 @@ class MedicalResults extends Model
         'upload_date',
     ];
 
-    public function student_information()
+    public function studentInformation()
     {
-        return $this->belongsTo(StudentInformation::class);
+        return $this->appointment->student_information;
+    }
+
+    public function appointment()
+    {
+        return $this->belongsTo(Appointment::class);
     }
 }

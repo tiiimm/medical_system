@@ -10,10 +10,18 @@ class MedicalProfile extends Model
     use HasFactory;
     
     protected $fillable = [
-        'profile_id', 'birthdate', 'sex', 'blood_type', 'allergies', 'medical_history'
+        'profile_id', 'birthdate', 'sex', 'blood_type'
     ];
 
     public function emergency_contact(){
         return $this->hasOne(EmergencyContact::class);
+    }
+
+    public function medical_histories(){
+        return $this->hasMany(MedicalHistory::class);
+    }
+
+    public function allergies(){
+        return $this->hasMany(Allergy::class);
     }
 }

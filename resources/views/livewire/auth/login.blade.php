@@ -14,6 +14,8 @@
                             </button>
                         </div>
                         @endif
+
+                        <!-- Email input -->
                         <div class="input-group input-group-outline mt-3 @if(strlen($email ?? '') > 0) is-filled @endif">
                             <label class="form-label">Email</label>
                             <input wire:model.live='email' type="email" class="form-control">
@@ -22,14 +24,23 @@
                         <p class='text-danger inputerror'>{{ $message }} </p>
                         @enderror
 
+                        <!-- Password input -->
                         <div class="input-group input-group-outline mt-3 @if(strlen($password ?? '') > 0) is-filled @endif">
                             <label class="form-label">Password</label>
-                            <input wire:model.live="password" type="password" class="form-control"
-                                    >
+                            <input wire:model.live="password" type="password" class="form-control">
                         </div>
                         @error('password')
                         <p class='text-danger inputerror'>{{ $message }} </p>
                         @enderror
+
+                        <!-- OTP input (only show after email and password) -->
+                        @if($otpSent)
+                        <div class="input-group input-group-outline mt-3 @if(strlen($otp ?? '') > 0) is-filled @endif">
+                            <label class="form-label">OTP</label>
+                            <input wire:model.live='otp' type="text" class="form-control">
+                        </div>
+                        @endif
+
                         <div class="form-check form-switch d-flex align-items-center my-3">
                             <input class="form-check-input" type="checkbox" id="rememberMe">
                             <label class="form-check-label mb-0 ms-2" for="rememberMe">Remember

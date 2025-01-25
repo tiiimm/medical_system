@@ -58,6 +58,15 @@
                     <span class="nav-link-text ms-1">Medical Staffs List</span>
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link text-white {{ str_starts_with(Route::currentRouteName(), 'system-settings') ? ' active bg-gradient-primary' : '' }} "
+                    href="{{ route('system-settings') }}">
+                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="material-icons opacity-10">settings</i>
+                    </div>
+                    <span class="nav-link-text ms-1">System Settings</span>
+                </a>
+            </li>
             @elseif(auth()->user()->hasRole('medical staff'))
             <li class="nav-item">
                 <a class="nav-link text-white {{ str_starts_with(Route::currentRouteName(), 'student-list') ? ' active bg-gradient-primary' : '' }} "
@@ -68,7 +77,7 @@
                     <span class="nav-link-text ms-1">Students List</span>
                 </a>
             </li>
-            <!-- <li class="nav-item">
+            <li class="nav-item">
                 <a class="nav-link text-white {{ str_starts_with(Route::currentRouteName(), 'appointment-list') ? ' active bg-gradient-primary' : '' }} "
                     href="{{ route('appointment-list') }}">
                     <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -76,7 +85,7 @@
                     </div>
                     <span class="nav-link-text ms-1">Appointment List</span>
                 </a>
-            </li> -->
+            </li>
             @elseif(auth()->user()->hasRole('drrmo staff'))
             <li class="nav-item">
                 <a class="nav-link text-white {{ str_starts_with(Route::currentRouteName(), 'appointment-list') ? ' active bg-gradient-primary' : '' }} "
@@ -106,7 +115,7 @@
                     <span class="nav-link-text ms-1">Medical Records</span>
                 </a>
             </li>
-            <li class="nav-item">
+            <!-- <li class="nav-item">
                 <a class="nav-link text-white {{ Route::currentRouteName() == 'appointment-history' ? ' active bg-gradient-primary' : '' }} "
                     href="{{ route('appointment-history') }}">
                     <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -114,7 +123,7 @@
                     </div>
                     <span class="nav-link-text ms-1">Transaction History</span>
                 </a>
-            </li>
+            </li> -->
             @endif
         </ul>
     </div>
