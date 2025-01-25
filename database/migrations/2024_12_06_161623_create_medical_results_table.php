@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('medical_results', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('appointment_id');
+            $table->engine = 'InnoDB';$table->id();
+            $table->foreignId('appointment_id')->constrained();
             $table->string('hematology_result')->nullable();
             $table->string('hematology_abnormality')->nullable();
             $table->text('hematology_remarks')->nullable();
@@ -35,9 +35,13 @@ return new class extends Migration
             $table->string('school_year');
             $table->string('semester');
             $table->date('upload_date');
-            $table->foreignId('reviewed_by')->index();
-            $table->foreignId('uploaded_by')->index();
+            $table->unsignedBigInteger('reviewed_by');
+            $table->unsignedBigInteger('uploaded_by');
             $table->timestamps();
+
+
+            $table->foreign('reviewed_by')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('uploaded_by')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

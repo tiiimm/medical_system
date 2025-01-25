@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('system_settings', function (Blueprint $table) {
-            $table->id();
+            $table->engine = 'InnoDB';$table->id();
             $table->string('semester');
             $table->string('school_year');
             $table->date('medical_start');

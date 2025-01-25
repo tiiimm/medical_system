@@ -12,11 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('appointment_logs', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('appointment_id');
+            $table->engine = 'InnoDB';$table->id();
+            $table->foreignId('appointment_id')->constrained();
             $table->string('status');
-            $table->foreignId('updated_by')->index();
+            $table->unsignedBigInteger('updated_by');
             $table->timestamps();
+
+
+            $table->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

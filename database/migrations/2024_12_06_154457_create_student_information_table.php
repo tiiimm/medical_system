@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('student_information', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id');
-            $table->foreignId('campus_id');
-            $table->foreignId('program_id');
+            $table->engine = 'InnoDB';$table->id();
+            $table->foreignId('user_id')->constrained();
+            $table->foreignId('campus_id')->constrained();
+            $table->foreignId('program_id')->constrained();
             $table->string('major')->nullable()->default('NA');
             $table->enum('year_level',['1st year', '2nd year', '3rd year', '4th year']);
             $table->enum('status', ['Regular', 'Irregular']);

@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('profiles', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id');
+            $table->engine = 'InnoDB';$table->id();
+            $table->foreignId('user_id')->constrained();
             $table->string('last_name');
             $table->string('first_name');
             $table->string('middle_name')->default('');

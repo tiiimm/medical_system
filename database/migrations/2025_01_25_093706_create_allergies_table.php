@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('allergies', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('medical_profile_id');
+            $table->engine = 'InnoDB';$table->id();
+            $table->foreignId('medical_profile_id')->constrained();
             $table->string('allergy_name'); 
             $table->text('triggers')->nullable(); 
             $table->boolean('is_active')->default(true); 

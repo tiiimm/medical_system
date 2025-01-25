@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('programs', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('college_id');
+            $table->engine = 'InnoDB';$table->id();
+            $table->foreignId('college_id')->constrained();
             $table->string('name');
             $table->string('abbreviation');
             $table->string('description')->nullable();

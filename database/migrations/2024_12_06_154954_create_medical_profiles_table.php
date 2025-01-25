@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('medical_profiles', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('profile_id');
+            $table->engine = 'InnoDB';$table->id();
+            $table->foreignId('profile_id')->constrained();
             $table->string('birthdate');
             $table->string('sex');
             $table->string('blood_type');

@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('appointments', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id');
+            $table->engine = 'InnoDB';$table->id();
+            $table->foreignId('user_id')->constrained();
             $table->string('appointment_number');
             $table->date('appointment_date');
             $table->string('appointment_schedule');

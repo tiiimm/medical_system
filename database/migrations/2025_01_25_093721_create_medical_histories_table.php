@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('medical_histories', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('medical_profile_id');
+            $table->engine = 'InnoDB';$table->id();
+            $table->foreignId('medical_profile_id')->constrained();
             $table->string('condition_name');
             $table->enum('treatment', ['Ongoing', 'Resolved', 'In remission'])->nullable(); 
             $table->boolean('is_chronic')->default(false); 
