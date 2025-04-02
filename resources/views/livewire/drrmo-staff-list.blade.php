@@ -4,7 +4,7 @@
             <div class="card my-4">
                 <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
                     <div class="bg-gradient-primary border-radius-lg pt-4 pb-3">
-                        <h4 class="text-white mx-3"><strong>Campus List</strong></h6>
+                        <h4 class="text-white mx-3"><strong>Drrmo Staffs List</strong></h6>
                     </div>
                 </div>
 
@@ -25,9 +25,9 @@
                         @enderror
                     </div>
                     <div class="col-12 col-md-2">
-                        <a class="btn bg-gradient-dark mb-0" href="javascript:;" wire:click="addModal">
-                            <i class="material-icons text-sm">add</i>&nbsp;&nbsp;Add Campus
-                        </a>
+                            <a wire:click="addDrrmoStaff()" class="btn bg-gradient-dark mb-0" href="javascript:;">
+                                <i class="material-icons text-sm">add</i>&nbsp;&nbsp;Add Staff
+                            </a>
                     </div>
                 </div>
 
@@ -43,10 +43,13 @@
                                     </th>
                                     <th
                                         class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                        CAMPUS NAME</th>
+                                        ID NUMBER</th>
                                     <th
                                         class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                        ADDRESS</th>
+                                        NAME</th>
+                                    <th
+                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                        EMAIL</th>
                                     <th
                                         class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                         STATUS
@@ -59,43 +62,48 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($campuses as $index => $campus)
+                                @forelse ($users as $index => $user)
                                 <tr>
                                     <td class="align-middle text-center">
                                         <div class="d-flex flex-column justify-content-center">
                                             <p class="mb-0 text-sm">{{$index + 1}}</p>
                                         </div>
                                     </td>
-                                    <td>
+                                    <td class="align-middle text-center">
                                         <div class="d-flex flex-column justify-content-center">
-                                            <h6 class="mb-0 text-sm">{{ $campus->name }}</h6>
+                                            <h6 class="mb-0 text-sm">
+                                                {{ $user->profile ? $user->profile->zppsu_number : 'No Profile Available' }}
+                                            </h6>
                                         </div>
                                     </td>
                                     <td>
                                         <div class="d-flex flex-column justify-content-center">
-                                            <h6 class="mb-0 text-sm">{{ $campus->address }}</h6>
+                                            <h6 class="mb-0 text-sm">{{ $user->name }}</h6>
                                         </div>
                                     </td>
                                     <td class="align-middle text-sm">
-                                        <p class="text-xs text-secondary mb-0">{{ $campus->is_active?'Active':'Deactivated' }}</p>
+                                        <p class="text-xs text-secondary mb-0">{{ $user->email }}</p>
                                     </td>
                                     <td class="align-middle text-sm">
-                                        <p class="text-xs text-secondary mb-0">{{ $campus->created_at }}</p>
+                                        <p class="text-xs text-secondary mb-0">{{ $user->is_active?'Active':'Deactivated' }}</p>
+                                    </td>
+                                    <td class="align-middle text-sm">
+                                        <p class="text-xs text-secondary mb-0">{{ $user->created_at }}</p>
                                     </td>
                                     <td class="align-middle">
-                                        <a wire:click="campusDetails('{{ $campus->id }}')" rel="tooltip" class="btn btn-secondary btn-link"
+                                        <a wire:click="showDetails('{{ $user->id }}')" rel="tooltip" class="btn btn-secondary btn-link"
                                             data-original-title=""
                                             title="">
                                             <i class="material-icons">edit</i>
                                             <div class="ripple-container"></div>
                                         </a>
-                                        @if($campus->is_active)
-                                            <a wire:click="deactivateCampus('{{ $campus->id }}')" wire:confirm="Are you sure you want to deactivate this campus?" class="btn btn-warning btn-link"
+                                        @if($user->is_active)
+                                            <a wire:click="confirmDeactivation('{{ $user->id }}')" class="btn btn-warning btn-link"
                                             data-original-title="Update Status" title="Update Status">
                                                 <i class="material-icons">block</i>
                                             </a>
                                         @else
-                                            <a wire:click="reactivateCampus('{{ $campus->id }}')" wire:confirm="Are you sure you want to reactivate this campus?" class="btn btn-success btn-link"
+                                            <a wire:click="confirmReactivation('{{ $user->id }}')" class="btn btn-success btn-link"
                                             data-original-title="Update Status" title="Update Status">
                                                 <i class="material-icons">check</i>
                                             </a>
@@ -112,58 +120,18 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="modal fade" id="campusModal" tabindex="-1" aria-labelledby="campusModalLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <!-- Modal Header -->
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="campusModalLabel">{{ $edit?'Edit Campus':'Add New Campus' }}</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-
-                                <!-- Modal Body -->
-                                <div class="modal-body">
-                                    <form wire:submit.prevent="{{ $edit ? 'updateCampus' : 'addCampus' }}">
-                                        <div class="mb-3">
-                                            <label for="campusName" class="form-label">Campus Name</label>
-                                            <div class="input-group input-group-outline @if(strlen($campusName ?? '') > 0) is-filled @endif">
-                                                <input wire:model="name" type="text" class="form-control" id="campusName" placeholder="Enter campus name">
-                                            </div>
-                                            @error('name') <span class="text-danger">{{ $message }}</span> @enderror
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="campusAddress" class="form-label">Campus Address</label>
-                                            <div class="input-group input-group-outline @if(strlen($campusAddress ?? '') > 0) is-filled @endif">
-                                                <input wire:model="address" type="text" class="form-control" id="campusAddress" placeholder="Enter campus address">
-                                            </div>
-                                            @error('address') <span class="text-danger">{{ $message }}</span> @enderror
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="campusStatus" class="form-label">Status</label>
-                                            <select wire:model="is_active" class="form-select" id="campusStatus">
-                                                <option value="1">Active</option>
-                                                <option value="0">Deactivated</option>
-                                            </select>
-                                            @error('is_active') <span class="text-danger">{{ $message }}</span> @enderror
-                                        </div>
-                                        <button type="submit" class="btn btn-primary">{{ $edit?'Update Campus':'Save Campus' }}</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-@script
 <script>
-    window.addEventListener('closeModal', function () {document.querySelector('#campusModal .btn-close').click();});
+    window.addEventListener('showConfirmation', function(event) {
 
-    window.addEventListener('showModal', function(event) {
-        new bootstrap.Modal(document.getElementById('campusModal')).show();
+        const { message, callback, userId } = event.detail[0];
+
+        if (confirm(message)) {
+            @this.call(callback, userId);
+        }
     });
-
 </script>
-@endscript

@@ -23,7 +23,7 @@ class MedicalLookup extends Component
         }
         $count = $profile->user->student_information->medical_results->count();
 
-        if ($count > 0)  $this->response = 'Student underwent medical and results are posted in their account';
+        if ($count > 0)  $this->response = 'Student underwent medical examination for this semester and results are posted in their account';
         else  $this->response = 'No record found. If this is a mistake, please come visit the clinic';
     }
 

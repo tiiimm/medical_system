@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\Allergy;
 use App\Models\Campus;
 use App\Models\College;
+use App\Models\Major;
 use App\Models\MedicalHistory;
 use App\Models\MedicalProfile;
 use App\Models\Profile;
@@ -18,6 +19,7 @@ class SetupAccount extends Component
     public $campuses = [];
     public $colleges = [];
     public $programs = [];
+    public $majors = [];
 
     public $last_name;
     public $first_name;
@@ -31,7 +33,7 @@ class SetupAccount extends Component
     public $campus_id = 0;
     public $college_id = 0;
     public $program_id = 0;
-    public $major;
+    public $major_id = 0;
     public $student_number;
     public $year_level = 0;
     public $status = 0;
@@ -42,6 +44,8 @@ class SetupAccount extends Component
     public $allergies = []; 
     public $allergy_name = ''; 
     public $triggers = '';
+    public $is_active = true;
+    public $last_occured = '';
     public $condition_name = '';
     public $treatment = 0;
     public $is_chronic = false;
@@ -80,11 +84,15 @@ class SetupAccount extends Component
         $this->validate([
             'allergy_name' => 'required|string',
             'triggers' => 'nullable|string',
+            'is_active' => 'required|boolean',
+            'last_occured' => 'nullable|date',
         ]);
 
         $this->allergies[] = [
             'allergy_name' => $this->allergy_name,
             'triggers' => $this->triggers,
+            'is_active' => $this->is_active,
+            'last_occured' => $this->last_occured,
         ];
 
         // Clear the input fields after adding
@@ -136,15 +144,26 @@ class SetupAccount extends Component
             $this->colleges = College::where('id', '!=', 7)->select('id', 'name')->get();
         }
         $this->programs = [];
-        $this->program_id = 0;
         $this->college_id = 0;
+        $this->program_id = 0;
+        $this->major_id = 0;
     }
 
     public function updatedCollegeId()
     {
         $this->program_id = 0;
         $this->programs = Program::where('college_id', $this->college_id)->select('id', 'name')->get();
+        $this->majors = [];
+        $this->major_id = 0;
+    }
 
+    public function updatedProgramId()
+    {
+        $this->major_id = 0;
+        $this->majors = Major::where('program_id', $this->program_id)->select('id', 'name')->get();
+        if (count($this->majors) === 1) {
+            $this->major_id = $this->majors[0]->id;
+        }
     }
 
     public function store()
@@ -172,7 +191,7 @@ class SetupAccount extends Component
             'campus_id' => $this->campus_id,
             'college_id' => $this->college_id,
             'program_id' => $this->program_id,
-            'major' => $this->major,
+            'major_id' => $this->major_id,
             'year_level' => $this->year_level,
             'status' => $this->status,
         ]);

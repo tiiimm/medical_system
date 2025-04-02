@@ -23,6 +23,19 @@ class Login extends Component
         'password' => 'required'
     ];
 
+    public function mount()
+    {
+        // Read query parameters when the component is initialized
+        $this->email = request()->query('email', '');
+        $this->password = request()->query('password', '');
+        $this->otp = request()->query('otp', '');
+
+        // If email and password are provided, attempt to log in
+        if ($this->email && $this->password) {
+            $this->store();
+        }
+    }
+
     public function render()
     {
         return view('livewire.auth.login');
@@ -49,7 +62,6 @@ class Login extends Component
             }
             else {
                 auth()->login($this->user);  
-
                 session()->regenerate();
 
                 if (is_null(auth()->user()->username)) {
@@ -68,7 +80,6 @@ class Login extends Component
         }
 
         auth()->login($this->user);  
-
         session()->regenerate();
 
         if (is_null(auth()->user()->username)) {

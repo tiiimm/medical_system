@@ -77,6 +77,7 @@ class CampusList extends Component
     public function addModal() {
         $this->edit = false;
         $this->reset(['name', 'address', 'is_active', 'search']);
+        $this->dispatch('showModal');
     }
 
     public function addCampus()

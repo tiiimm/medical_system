@@ -91,6 +91,7 @@ class ProgramList extends Component
     public function addModal() {
         $this->edit = false;
         $this->reset(['name', 'abbreviation', 'description', 'duration_years', 'college_id', 'is_active', 'search']);
+        $this->dispatch('showModal');
     }
 
     public function addProgram()

@@ -23,40 +23,91 @@
             </li>
             @if(auth()->user()->hasRole('administrator'))
             <li class="nav-item">
-                <a class="nav-link text-white {{ Route::currentRouteName() == 'campus-list' ? ' active bg-gradient-primary' : '' }} "
-                    href="{{ route('campus-list') }}">
+                <a class="nav-link text-white collapsed" data-bs-toggle="collapse" href="#academicManagement" aria-expanded="false">
                     <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="material-icons opacity-10">school</i>
+                        <i class="material-icons opacity-10">menu_book</i> <!-- Icon for the group -->
                     </div>
-                    <span class="nav-link-text ms-1">Campuses List</span>
+                    <span class="nav-link-text ms-1 mx-2">Academic Management</span>
                 </a>
+                <div class="collapse {{ str_starts_with(Route::currentRouteName(), 'campus-list') || str_starts_with(Route::currentRouteName(), 'college-list') || str_starts_with(Route::currentRouteName(), 'program-list') ? ' show' : '' }}" id="academicManagement">
+                    <ul class="nav flex-column ms-4">
+                        <!-- Campuses List -->
+                        <li class="nav-item">
+                            <a class="nav-link text-white {{ Route::currentRouteName() == 'campus-list' ? ' active bg-gradient-primary' : '' }}"
+                                href="{{ route('campus-list') }}">
+                                <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                                    <i class="material-icons opacity-10">school</i>
+                                </div>
+                                <span class="nav-link-text ms-1">Campuses List</span>
+                            </a>
+                        </li>
+                    </ul>
+                    <ul class="nav flex-column ms-4">
+                        <li class="nav-item">
+                            <a class="nav-link text-white {{ str_starts_with(Route::currentRouteName(), 'college-list') ? ' active bg-gradient-primary' : '' }} "
+                                href="{{ route('college-list') }}">
+                                <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                                    <i class="material-icons opacity-10">apartment</i>
+                                </div>
+                                <span class="nav-link-text ms-1">Colleges List</span>
+                            </a>
+                        </li>
+                    </ul>
+                    <ul class="nav flex-column ms-4">
+                        <li class="nav-item">
+                            <a class="nav-link text-white {{ str_starts_with(Route::currentRouteName(), 'program-list') ? ' active bg-gradient-primary' : '' }} "
+                                href="{{ route('program-list') }}">
+                                <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                                    <i class="material-icons opacity-10">badge</i>
+                                </div>
+                                <span class="nav-link-text ms-1">Programs List</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-white {{ str_starts_with(Route::currentRouteName(), 'college-list') ? ' active bg-gradient-primary' : '' }} "
-                    href="{{ route('college-list') }}">
+                <a class="nav-link text-white collapsed" data-bs-toggle="collapse" href="#userManagement" aria-expanded="false">
                     <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="material-icons opacity-10">apartment</i>
+                        <i class="material-icons opacity-10">person</i> <!-- Icon for the group -->
                     </div>
-                    <span class="nav-link-text ms-1">Colleges List</span>
+                    <span class="nav-link-text ms-1 mx-2">User Management</span>
                 </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-white {{ str_starts_with(Route::currentRouteName(), 'program-list') ? ' active bg-gradient-primary' : '' }} "
-                    href="{{ route('program-list') }}">
-                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="material-icons opacity-10">badge</i>
-                    </div>
-                    <span class="nav-link-text ms-1">Programs List</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-white {{ str_starts_with(Route::currentRouteName(), 'medical-staff-list') ? ' active bg-gradient-primary' : '' }} "
-                    href="{{ route('medical-staff-list') }}">
-                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="material-icons opacity-10">medical_services</i>
-                    </div>
-                    <span class="nav-link-text ms-1">Medical Staffs List</span>
-                </a>
+                <div class="collapse {{ str_starts_with(Route::currentRouteName(), 'medical-staff-list') || str_starts_with(Route::currentRouteName(), 'drrmo-staff-list') || str_starts_with(Route::currentRouteName(), 'student-list') ? ' show' : '' }}" id="userManagement">
+                    <ul class="nav flex-column ms-4">
+                        <li class="nav-item">
+                            <a class="nav-link text-white {{ str_starts_with(Route::currentRouteName(), 'medical-staff-list') ? ' active bg-gradient-primary' : '' }} "
+                                href="{{ route('medical-staff-list') }}">
+                                <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                                    <i class="material-icons opacity-10">medical_services</i>
+                                </div>
+                                <span class="nav-link-text ms-1">Medical Staffs List</span>
+                            </a>
+                        </li>
+                    </ul>
+                    <ul class="nav flex-column ms-4">
+                        <li class="nav-item">
+                            <a class="nav-link text-white {{ str_starts_with(Route::currentRouteName(), 'drrmo-staff-list') ? ' active bg-gradient-primary' : '' }} "
+                                href="{{ route('drrmo-staff-list') }}">
+                                <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                                    <i class="material-icons opacity-10">health_and_safety</i>
+                                </div>
+                                <span class="nav-link-text ms-1">DRRMO Staffs List</span>
+                            </a>
+                        </li>
+                    </ul>
+                    <ul class="nav flex-column ms-4">
+                        <li class="nav-item">
+                            <a class="nav-link text-white {{ str_starts_with(Route::currentRouteName(), 'student-list') ? ' active bg-gradient-primary' : '' }} "
+                                href="{{ route('student-list') }}">
+                                <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                                    <i class="material-icons opacity-10">list</i>
+                                </div>
+                                <span class="nav-link-text ms-1">Students List</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </li>
             <li class="nav-item">
                 <a class="nav-link text-white {{ str_starts_with(Route::currentRouteName(), 'system-settings') ? ' active bg-gradient-primary' : '' }} "
@@ -128,3 +179,13 @@
         </ul>
     </div>
 </aside>
+
+<!-- @script
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    let dropdownToggle = document.querySelector("[data-bs-toggle='collapse']");
+    dropdownToggle.addEventListener("click", function(event) {
+        event.stopPropagation(); // Prevents unintended closing
+    });
+});
+</script> -->

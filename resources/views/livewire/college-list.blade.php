@@ -25,7 +25,7 @@
                         @enderror
                     </div>
                     <div class="col-12 col-md-2">
-                        <a class="btn bg-gradient-dark mb-0" href="javascript:;" data-bs-toggle="modal" data-bs-target="#collegeModal" wire:click="addModal">
+                        <a class="btn bg-gradient-dark mb-0" href="javascript:;" wire:click="addModal">
                             <i class="material-icons text-sm">add</i>&nbsp;&nbsp;Add College
                         </a>
                     </div>

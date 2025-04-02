@@ -101,6 +101,8 @@ class AppointmentList extends Component
             ->when($this->showTodayOnly, function ($query) use ($today) {
                 return $query->whereDate('appointment_date', $today);
             })
+            ->whereNotIn('status', ['Result Posted']) // Exclude specific statuses
+            ->orderBy('appointment_date', 'asc')
             ->get();
 
         foreach ($appointments as $appointment) {

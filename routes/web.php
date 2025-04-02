@@ -30,6 +30,9 @@ use App\Livewire\BookAppointment;
 use App\Livewire\AppointmentList;
 use App\Livewire\SystemSettings;
 use App\Livewire\AppointmentList\AppointmentResult;
+use App\Livewire\DrrmoStaffList;
+use App\Livewire\DrrmoStaffList\EditDrrmoStaff;
+use App\Livewire\DrrmoStaffList\NewDrrmoStaff;
 
 Route::get('/', Landing::class)->middleware('guest')->name('landing');
 
@@ -61,6 +64,10 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('medical-staff-list', MedicalStaffList::class)->name('medical-staff-list');
         Route::get('medical-staff-list/new-medical-staff', NewMedicalStaff::class)->name('medical-staff-list/new-medical-staff');
         Route::get('medical-staff-list/edit-medical-staff', EditMedicalStaff::class)->name('medical-staff-list/edit-medical-staff');
+
+        Route::get('drrmo-staff-list', DrrmoStaffList::class)->name('drrmo-staff-list');
+        Route::get('drrmo-staff-list/new-drrmo-staff', NewDrrmoStaff::class)->name('drrmo-staff-list/new-drrmo-staff');
+        Route::get('drrmo-staff-list/edit-drrmo-staff', EditDrrmoStaff::class)->name('drrmo-staff-list/edit-drrmo-staff');
 
         Route::get('student-list', StudentList::class)->name('student-list');
         Route::get('student-list/new-medical-result', NewMedicalResult::class)->name('student-list/new-medical-result');

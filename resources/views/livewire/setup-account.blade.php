@@ -135,13 +135,17 @@
                                                 </div>
                                             </div>
                                             <div class="col-6">
-                                                <div class="input-group input-group-outline @if(strlen($major ?? '') > 0) is-filled @endif">
-                                                    <label class="form-label">Major (leave blank if none)</label>
-                                                    <input wire:model.live="major" type="text" class="form-control">
+                                                <div class="relative">
+                                                    <select wire:model.live="major_id" class="form-select border border-1 p-2 px-2-5" data-style="select-with-transition" title="" data-size="100" id="major">
+                                                        <option value="0" disabled selected class="placeholder">Select Major</option>
+                                                        @foreach($majors as $major)
+                                                            <option value="{{ $major->id }}">{{ $major->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                    @error('major_id')
+                                                    <p class='text-danger inputerror'>Select a Major</p>
+                                                    @enderror
                                                 </div>
-                                                @error('major')
-                                                <p class='text-danger inputerror'>{{ $message }}</p>
-                                                @enderror
                                             </div>
                                         </div>
                                         <div class="row mt-4">
@@ -227,7 +231,7 @@
 
                                         <h6 class="text-black font-weight-bolder text-start my-4">Part 4. Allergies</h6>
                                         <div class="row mt-4">
-                                            <div class="col-5">
+                                            <div class="col-3">
                                                 <div class="input-group input-group-outline @if(strlen($allergy_name ?? '') > 0) is-filled @endif">
                                                     <label class="form-label">Allergy Name</label>
                                                     <input wire:model.live="allergy_name" type="text" class="form-control">
@@ -236,7 +240,7 @@
                                                 <p class='text-danger inputerror'>{{ $message }}</p>
                                                 @enderror
                                             </div>
-                                            <div class="col-5">
+                                            <div class="col-3">
                                                 <div class="input-group input-group-outline @if(strlen($triggers ?? '') > 0) is-filled @endif">
                                                     <label class="form-label">Triggers (Optional)</label>
                                                     <input wire:model.live="triggers" type="text" class="form-control">
@@ -244,6 +248,25 @@
                                                 @error('triggers')
                                                 <p class='text-danger inputerror'>{{ $message }}</p>
                                                 @enderror
+                                            </div>
+                                            <div class="col-2">
+                                                <div class="input-group input-group-outline @if(strlen($last_occured ?? '') > 0) is-filled @endif">
+                                                    <label class="form-label">Last Occured</label>
+                                                    <input wire:model.live="last_occured" type="date" class="form-control">
+                                                </div>
+                                                @error('last_occured')
+                                                <p class='text-danger inputerror'>{{ $message }}</p>
+                                                @enderror
+                                            </div>
+                                            <div class="col-2">
+                                                <div class="input-group input-group-outline @if($is_active) is-filled @endif">
+                                                    <div class="form-check">
+                                                        <input wire:model.live="is_active" class="form-check-input" type="checkbox" id="is_active">
+                                                        <label class="form-check-label" for="is_active">
+                                                            Still Active
+                                                        </label>
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div class="col-2">
                                                 <div class="text-center">
@@ -259,6 +282,8 @@
                                                     <tr>
                                                         <th>Allergy Name</th>
                                                         <th>Triggers</th>
+                                                        <th>Last occurrence</th>
+                                                        <th>Active</th>
                                                         <th>Action</th>
                                                     </tr>
                                                 </thead>
@@ -267,6 +292,8 @@
                                                         <tr>
                                                             <td>{{ $allergy['allergy_name'] }}</td>
                                                             <td>{{ $allergy['triggers'] ?? 'None' }}</td>
+                                                            <td>{{ $allergy['last_occured'] ? \Carbon\Carbon::parse($allergy['last_occured'])->format('d/m/Y') : 'N/A' }}</td>
+                                                            <td>{{ $allergy['is_active'] ? 'Yes' : 'No' }}</td>
                                                             <td>
                                                                 <button wire:click="removeAllergy({{ $index }})" class="btn btn-danger btn-sm">Remove</button>
                                                             </td>

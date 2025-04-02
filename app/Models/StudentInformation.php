@@ -10,11 +10,15 @@ class StudentInformation extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'campus_id', 'program_id', 'major', 'year_level', 'status'
+        'user_id', 'campus_id', 'program_id', 'major_id', 'year_level', 'status'
     ];
 
     public function program() {
         return $this->belongsTo(Program::class);
+    }
+
+    public function major() {
+        return $this->belongsTo(Major::class);
     }
 
     public function user() {

@@ -16,7 +16,8 @@
                                 <span class="font-weight-bolder">Student Name:</span> {{$selectedUser->name}} <br>
                                 <span class="font-weight-bolder">Birthdate:</span> {{$selectedUser->profile->medical_profile->birthdate}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                 @php use Carbon\Carbon; @endphp
-                                <span class="font-weight-bolder">Age:</span> {{Carbon::parse($selectedUser->profile->medical_profile->birthdate)->age}}
+                                <span class="font-weight-bolder">Age:</span> {{Carbon::parse($selectedUser->profile->medical_profile->birthdate)->age}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <span class="font-weight-bolder">Sex:</span> {{$selectedUser->profile->medical_profile->sex}}
                             </p>
                         </div>
                         <div class="col-6">

@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('name');
             $table->string('abbreviation');
             $table->string('description')->nullable();
-            $table->integer('duration_years')->default(4);
             $table->boolean('is_active')->default(1);
             $table->timestamps();
         });

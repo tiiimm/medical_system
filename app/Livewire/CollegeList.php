@@ -47,7 +47,7 @@ class CollegeList extends Component
             });
         }
     
-        $this->colleges = $query->with('profile')->get();
+        $this->colleges = $query->get();
     }
 
     public function deactivateCollege($collegeId)
@@ -77,6 +77,7 @@ class CollegeList extends Component
     public function addModal() {
         $this->edit = false;
         $this->reset(['name', 'abbreviation', 'is_active', 'search']);
+        $this->dispatch('showModal');
     }
 
     public function addCollege()

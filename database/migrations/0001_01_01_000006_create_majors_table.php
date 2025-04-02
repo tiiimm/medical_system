@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('student_information', function (Blueprint $table) {
+        Schema::create('majors', function (Blueprint $table) {
             $table->engine = 'InnoDB';$table->id();
-            $table->foreignId('user_id')->constrained();
-            $table->foreignId('campus_id')->constrained();
             $table->foreignId('program_id')->constrained();
-            $table->foreignId('major_id')->constrained();
-            $table->enum('year_level',['1st year', '2nd year', '3rd year', '4th year']);
-            $table->enum('status', ['Regular', 'Irregular']);
+            $table->string('name');
+            $table->string('abbreviation')->nullable();
+            $table->integer('duration_years')->default(4);
+            $table->boolean('is_active')->default(1);
+            $table->boolean('food_related')->default(0);
             $table->timestamps();
         });
     }
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('student_information');
+        Schema::dropIfExists('majors');
     }
 };

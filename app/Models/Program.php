@@ -11,10 +11,14 @@ class Program extends Model
         'name',
         'abbreviation',
         'description',
-        'duration_years'
+        'is_active'
     ];
 
     public function college() {
         return $this->belongsTo(College::class);
+    }
+
+    public function majors() {
+        return $this->hasMany(Major::class);
     }
 }
