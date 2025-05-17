@@ -16,14 +16,32 @@ class MedicalRecords extends Component
 
     public function mount()
     {
-        if (session('selectedUser'))
+        if (session('selectedUser')){
             $this->selectedUser = session('selectedUser');
+            session()->keep(['selectedUser']);
+        }
         else $this->selectedUser = auth()->user();
 
         // If no user is selected, redirect back to the user list page
         if (session('selectedUser') && !$this->selectedUser) {
             return redirect()->route('student-list')->with('error', 'No student selected.');
         }
+    }
+
+    public function printHealthRecord()
+    {
+        $payload = [
+            'document' => 'health-record',
+            'width' => 8.27/2,
+            'height' => 11.69,
+
+            'user' => $this->selectedUser
+        ];
+        $encrypted = Crypt::encrypt($payload);
+
+        $this->dispatch('open-preview-tab', [
+            'url' => '/document/preview?token=' . urlencode($encrypted),
+        ]);
     }
 
     public function addNewRecord()
@@ -74,20 +92,22 @@ class MedicalRecords extends Component
         // Save the QR code as an image or generate a data URL
         $qrCodeUrl = base64_encode($qrCodeBinary->getString());
 
-        $pdf = PDF::loadView('pdf.medical-certificate', [
+        $payload = [
             'studentName' => $medicalResult->appointment->student_information->user->name,
             'yearLevel' => $medicalResult->appointment->student_information->year_level,
             'course' => $medicalResult->appointment->student_information->program->name,
             'dateReleased' => $medicalResult->appointment->appointment_date,
             'qrCodeUrl' => $qrCodeUrl,
-        ]);
-    
-        return response()->streamDownload(function () use ($pdf) {
-            echo $pdf->stream();
-        }, 'medical-certificate.pdf');
+            'document' => 'medical-certificate',
+            'width' => 8.5,
+            'height' => 13,
+        ];
+        $encrypted = Crypt::encrypt($payload);
 
-        // // Option 2: Download the PDF directly
-        // // return $pdf->download('medical-certificate.pdf');
+        $this->dispatch('open-preview-tab', [
+            'url' => '/document/preview?token=' . urlencode($encrypted),
+        ]);
+
     }
 
     public function render()

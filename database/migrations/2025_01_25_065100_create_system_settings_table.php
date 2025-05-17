@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('school_year');
             $table->date('medical_start');
             $table->date('medical_end');
+            $table->integer('slots');
             $table->timestamps();
         });
     }

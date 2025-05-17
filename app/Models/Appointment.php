@@ -27,7 +27,7 @@ class Appointment extends Model
     }
 
     public function medical_results() {
-        return $this->hasMany(MedicalResults::class);
+        return $this->hasOne(MedicalResults::class);
     }
 
     public function logs() {

@@ -14,21 +14,7 @@ return new class extends Migration
         Schema::create('medical_results', function (Blueprint $table) {
             $table->engine = 'InnoDB';$table->id();
             $table->foreignId('appointment_id')->constrained();
-            $table->string('hematology_result')->nullable();
-            $table->string('hematology_abnormality')->nullable();
-            $table->text('hematology_remarks')->nullable();
-            $table->string('urinalysis_result')->nullable();
-            $table->string('urinalysis_abnormality')->nullable();
-            $table->text('urinalysis_remarks')->nullable();
-            $table->string('xray_result')->nullable();
-            $table->string('xray_abnormality')->nullable();
-            $table->text('xray_remarks')->nullable();
-            $table->string('ishihara_result')->nullable();
-            $table->string('ishihara_abnormality')->nullable();
-            $table->text('ishihara_remarks')->nullable();
-            $table->string('drugtest_result')->nullable();
-            $table->string('drugtest_abnormality')->nullable();
-            $table->text('drugtest_remarks')->nullable();
+            $table->json('test_results')->nullable();
             $table->text('condition')->nullable();
             $table->text('additional_comments')->nullable();
             $table->string('result_file_path')->nullable();

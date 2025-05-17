@@ -2,7 +2,7 @@
     <div class="row signin-margin">
         <div class="">
             <!-- Hero Section -->
-            <div class="z-index-0 fadeIn3 fadeInBottom mt-5" :landing>
+            <div class="z-index-0 fadeIn3 fadeInBottom mt-5" x-data="{ landing: true }">
                 <div class="card-body py-15">
                     <!-- Hero Heading -->
                     <h1 class="text-light font-weight-bold text-center display-3 mb-3 hero-heading">Welcome to MedEx</h1>
@@ -60,7 +60,7 @@
                     </div>
                 </div>
             </div>
-
+{{-- 
             <!-- Testimonials Section -->
             <div class="card mt-5 fadeIn3 fadeInBottom">
                 <div class="card-body py-5">
@@ -89,14 +89,14 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> --}}
 
             <!-- Call-to-Action Section -->
             <div class="card mt-5 fadeIn3 fadeInBottom">
                 <div class="card-body py-5 text-center">
                     <h3 class="text-dark font-weight-bolder mb-4">Ready to Get Started?</h3>
-                    <p class="text-muted mb-4">Join thousands of satisfied users and experience the future of healthcare today.</p>
-                    <a href="#signup" class="btn btn-primary btn-lg">Sign Up Now</a>
+                    <p class="text-muted mb-4">Join now for a more convenient experience.</p>
+                    <a href="{{ route('register') }}" class="btn btn-primary btn-lg">Sign Up Now</a>
                 </div>
             </div>
         </div>

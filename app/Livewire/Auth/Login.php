@@ -54,22 +54,22 @@ class Login extends Component
                 ]);
             }
 
-            if ($this->user->username == 'tiiimm') {
-                $this->otpCode = rand(100000, 999999);
-                $this->sendSms($this->formatPhoneNumber($this->user->profile->contact_number), $this->otpCode);
+            // if ($this->user->username == 'tiiimm') {
+            //     $this->otpCode = rand(100000, 999999);
+            //     $this->sendSms($this->formatPhoneNumber($this->user->profile->contact_number), $this->otpCode);
 
-                $this->otpSent = true;
-            }
-            else {
+            //     $this->otpSent = true;
+            // }
+            // else {
                 auth()->login($this->user);  
                 session()->regenerate();
 
-                if (is_null(auth()->user()->username)) {
+                if (is_null(auth()->user()->name)) {
                     return redirect('/setup-account');
                 }
 
                 return redirect('/dashboard');
-            }
+            // }
 
             return; 
         }
@@ -102,7 +102,7 @@ class Login extends Component
     {
         $sid = getenv('TWILIO_ACCOUNT_SID');
         $authToken = getenv('TWILIO_AUTH_TOKEN');
-        $from = '+13613154818';
+        $from = getenv('TWILIO_FROM_NUMBER');
         $to = $contactNumber;
     
         $url = 'https://api.twilio.com/2010-04-01/Accounts/' . $sid . '/Messages.json';

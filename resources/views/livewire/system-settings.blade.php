@@ -50,7 +50,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-6">
+                            <div class="col-5">
                                 <label for="semester" class="form-label">Medical Start Date</label>
                                 <div class="input-group input-group-outline @if(strlen($medical_start ?? '') > 0) is-filled @endif">
                                     <input wire:model="medical_start" type="date" class="form-control" required>
@@ -60,12 +60,22 @@
                                 @enderror
                             </div>
 
-                            <div class="col-6">
+                            <div class="col-5">
                                 <label for="semester" class="form-label">Medical End Date</label>
                                 <div class="input-group input-group-outline @if(strlen($medical_end ?? '') > 0) is-filled @endif">
                                     <input wire:model="medical_end" type="date" class="form-control" required>
                                 </div>
                                 @error('medical_end')
+                                <p class='text-danger inputerror'>{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div class="col-2">
+                                <label for="slots" class="form-label">Slots per AM/PM</label>
+                                <div class="input-group input-group-outline @if(strlen($slots ?? '') > 0) is-filled @endif">
+                                    <input wire:model="slots" type="number" class="form-control" min="100" max="500" step="1" placeholder="Enter Slots per AM/PM" required>
+                                </div>
+                                @error('slots')
                                 <p class='text-danger inputerror'>{{ $message }}</p>
                                 @enderror
                             </div>

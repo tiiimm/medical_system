@@ -9,6 +9,7 @@ class SystemSettings extends Component
 {
     public $semester;
     public $school_year;
+    public $slots;
     public $sy_start;
     public $sy_end;
     public $medical_start;
@@ -20,6 +21,7 @@ class SystemSettings extends Component
 
         $this->semester = $settings->semester;
         $this->school_year = $settings->school_year;
+        $this->slots = $settings->slots;
         $this->sy_start = explode('-', $settings->school_year)[0];
         $this->sy_end = explode('-', $settings->school_year)[1];
         $this->medical_start = $settings->medical_start;
@@ -36,6 +38,7 @@ class SystemSettings extends Component
         $this->validate([
             'semester' => 'required|string|max:255',
             'school_year' => 'required|string|max:255',
+            'slots' => 'required|integer',
             'medical_start' => 'required|date',
             'medical_end' => 'required|date',
         ]);
@@ -47,6 +50,7 @@ class SystemSettings extends Component
             'school_year' => $this->sy_start.'-'.$this->sy_end,
             'medical_start' => $this->medical_start,
             'medical_end' => $this->medical_end,
+            'slots' => $this->slots,
         ]);
 
         session()->flash('message', 'Settings updated successfully!');

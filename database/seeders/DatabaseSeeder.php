@@ -32,8 +32,9 @@ class DatabaseSeeder extends Seeder
         SystemSetting::create([
             'semester' => '2nd Semester',
             'school_year' => '2024-2025',
-            'medical_start' => '2025-01-25',
-            'medical_end' => '2025-02-15',
+            'medical_start' => now()->subDay()->format('Y-m-d'),
+            'medical_end' => now()->subDay()->addDays(10)->format('Y-m-d'),
+            'slots' => '300',
         ]);
     }
 }

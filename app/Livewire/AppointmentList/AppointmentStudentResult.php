@@ -10,50 +10,20 @@ use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
 use Illuminate\Support\Facades\Crypt;
 
-class AppointmentResult extends Component
+class AppointmentStudentResult extends Component
 {
     use WithFileUploads;
     
     public $selectedAppointment;
     public $selectedUser;
 
-    public $hepatitis_a_result = 'Negative';
-    public $hepatitis_a_abnormality;
-    public $hepatitis_a_remarks;
-    public $stool_exam_result = 'Normal';
-    public $stool_exam_abnormality;
-    public $stool_exam_remarks;
-    public $xray_result = 'Normal';
-    public $xray_abnormality;
-    public $xray_remarks;
-    public $ishihara_result = 'Normal';
-    public $ishihara_abnormality;
-    public $ishihara_remarks;
-    public $drugtest_result = 'Negative';
-    public $drugtest_abnormality;
-    public $drugtest_remarks;
-    public $condition;
-    public $additional_comments;
-    public $tests = [
-        'hepatitis_a',
-        'stool_exam',
-        'xray',
-        'ishihara',
-        'drugtest'
-    ];
+    public $result_file;
 
     protected function rules()
     {
         $rules = [
-            'condition' => 'nullable|string',
-            'additional_comments' => 'nullable|string',
+            'result_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
         ];
-
-        foreach ($this->tests as $test) {
-            $rules["{$test}_result"] = 'required|string';
-            $rules["{$test}_abnormality"] = "required_if:{$test}_result,abnormal,positive|string|nullable";
-            $rules["{$test}_remarks"] = 'nullable|string';
-        }
 
         return $rules;
     }
@@ -63,46 +33,13 @@ class AppointmentResult extends Component
         $this->validate();
 
         // Save the file if uploaded
-        // if ($this->result_file) {
-        //     $filePath = $this->result_file->store('documents', 'public');
-        // }
-
-        $testResults = [
-            'XRay' => [
-                'result' => $this->xray_result,
-                'abnormality' => $this->xray_abnormality,
-                'remarks' => $this->xray_remarks
-            ],
-            'Drug Test' => [
-                'result' => $this->drugtest_result,
-                'abnormality' => $this->drugtest_abnormality,
-                'remarks' => $this->drugtest_remarks
-            ]
-        ];
-        
-        // Conditionally add 'Hepatitis A' test result if the major is food-related
-        if ($this->selectedAppointment->student_information->major->food_related) {
-            $testResults['Hepatitis A'] = [
-                'result' => $this->hepatitis_a_result,
-                'abnormality' => $this->hepatitis_a_abnormality,
-                'remarks' => $this->hepatitis_a_remarks
-            ];
-            $testResults['Stool Exam'] = [
-                'result' => $this->stool_exam_result,
-                'abnormality' => $this->stool_exam_abnormality,
-                'remarks' => $this->stool_exam_remarks
-            ];
+        if ($this->result_file) {
+            $filePath = $this->result_file->store('documents', 'public');
         }
 
-        $testResults = array_filter($testResults, function ($test) {
-            return !empty(array_filter($test)); // Removes tests that have all null/empty values
-        });
-
         // Example of storing data (adjust to your database structure)
-        $medical_result = $this->selectedAppointment->medical_results()->update([
-            'test_results' => json_encode($testResults),
-            'condition' => $this->condition,
-            'additional_comments' => $this->additional_comments,
+        $medical_result = $this->selectedAppointment->medical_results()->create([
+            'result_file_path' => $filePath ?? null,
             'semester' => now()->month <= 6 ? '2nd sem' : '1st sem',
             'school_year' => now()->month <= 6 ? (now()->year - 1) . '-' . now()->year : now()->year . '-' . (now()->year + 1),
             'upload_date' => now(),
@@ -113,17 +50,9 @@ class AppointmentResult extends Component
         session()->flash('success', 'Medical results saved successfully!');
         $this->js("alert('Medical results saved successfully!')");
 
-        $this->selectedAppointment->update([
-            'status' => 'Result Posted'
-        ]);
-        $this->selectedAppointment->logs()->create([
-            'status' => 'Result Posted',
-            'updated_by' =>auth()->user()->id
-        ]);
-
         // $this->sendSms($this->formatPhoneNumber($this->selectedAppointment->student_information->user->profile->contact_number),$medical_result);
 
-        // $this->generateCertificate($medical_result->id);
+        $this->generateCertificate($medical_result->id);
         return redirect('/appointment-list')->with(true);
     }
 
@@ -212,6 +141,6 @@ class AppointmentResult extends Component
 
     public function render()
     {
-        return view('livewire.appointment-list.result');
+        return view('livewire.appointment-list.student-result');
     }
 }

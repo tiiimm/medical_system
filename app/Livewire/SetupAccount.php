@@ -11,6 +11,8 @@ use App\Models\MedicalProfile;
 use App\Models\Profile;
 use App\Models\Program;
 use App\Models\StudentInformation;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class SetupAccount extends Component
@@ -34,11 +36,13 @@ class SetupAccount extends Component
     public $college_id = 0;
     public $program_id = 0;
     public $major_id = 0;
+    public $na_major = false;
     public $student_number;
     public $year_level = 0;
     public $status = 0;
     public $birthdate;
     public $sex = 0;
+    public $civil_status = 0;
     public $blood_type = 0;
 
     public $allergies = []; 
@@ -65,13 +69,14 @@ class SetupAccount extends Component
         'campus_id' => 'required|integer|exists:campuses,id',
         'college_id' => 'required|integer|exists:colleges,id',
         'program_id' => 'required|integer|exists:programs,id',
+        'major_id' => 'required|integer|exists:majors,id',
         'student_number' => 'required|string|max:255',
-        'major' => 'nullable|string|max:255',
         'year_level' => 'required|string|max:50',
         'status' => 'required|string|max:50',
         'birthdate' => 'required|date',
         'sex' => 'required|string|max:50',
         'blood_type' => 'required|string|max:10',
+        'civil_status' => 'required|string|max:10|in:Single,Married,Widow/er',
     ];
     
     public function mount()
@@ -124,7 +129,7 @@ class SetupAccount extends Component
 
         // Clear the input fields after adding
         $this->condition_name = '';
-        $this->treatment = '';
+        $this->treatment = 0;
         $this->is_chronic = false;
         $this->last_checkup = '';
     }
@@ -147,6 +152,7 @@ class SetupAccount extends Component
         $this->college_id = 0;
         $this->program_id = 0;
         $this->major_id = 0;
+        $this->na_major = false;
     }
 
     public function updatedCollegeId()
@@ -155,20 +161,23 @@ class SetupAccount extends Component
         $this->programs = Program::where('college_id', $this->college_id)->select('id', 'name')->get();
         $this->majors = [];
         $this->major_id = 0;
+        $this->na_major = false;
     }
 
     public function updatedProgramId()
     {
         $this->major_id = 0;
         $this->majors = Major::where('program_id', $this->program_id)->select('id', 'name')->get();
+        $this->na_major = false;
         if (count($this->majors) === 1) {
             $this->major_id = $this->majors[0]->id;
+            $this->na_major = true;
         }
     }
 
     public function store()
     {
-        $user = auth()->user();
+        $user = User::find(Auth::id());
         $this->validate();
 
         $user->update([
@@ -184,6 +193,7 @@ class SetupAccount extends Component
             'contact_number' => $this->contact_number,
             'address' => $this->street.', '.$this->barangay.', '.$this->city.', '.$this->province,
             'zppsu_number' => $this->student_number,
+            'civil_status' => $this->civil_status,
         ]);
 
         $studentInfo = StudentInformation::create([

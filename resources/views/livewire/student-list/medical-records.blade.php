@@ -11,6 +11,11 @@
                     @if(auth()->user()->hasRole('medical staff'))
                     <a class="btn bg-gradient-dark mb-0" wire:click="addNewRecord"><i class="material-icons text-sm">add</i>&nbsp;&nbsp;Add New Record</a>
                     @endif
+                    @if(auth()->user()->hasRole('medical staff'))
+                        <a class="btn bg-gradient-success mb-0" wire:click="printHealthRecord">
+                            <i class="material-icons text-sm">print</i>&nbsp;&nbsp;Print Health Record Form
+                        </a>
+                    @endif
                 </div>
                 <div class="card-body-fit px-0 pb-2">
                     <div class="table-responsive p-0">
@@ -21,9 +26,7 @@
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">MEDICAL DATE</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">SCHOOL YEAR</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">SEMESTER</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">HEMATOLOGY</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">URINALYSIS</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">XRAY</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">CONDITION</th>
                                     <th class="text-secondary opacity-7"></th>
                                 </tr>
                             </thead>
@@ -51,13 +54,7 @@
                                         </div>
                                     </td>
                                     <td class="align-middle text-center text-sm">
-                                        <p class="text-xs text-secondary mb-0">{{ $medical_result->hematology_result }}</p>
-                                    </td>
-                                    <td class="align-middle text-center text-sm">
-                                        <p class="text-xs text-secondary mb-0">{{ $medical_result->urinalysis_result }}</p>
-                                    </td>
-                                    <td class="align-middle text-center text-sm">
-                                        <p class="text-xs text-secondary mb-0">{{ $medical_result->xray_result }}</p>
+                                        <p class="text-xs text-secondary mb-0">{{ $medical_result->condition }}</p>
                                     </td>
                                     <td class="align-middle">
                                         <a wire:click="downloadFile('{{ $medical_result['id'] }}')" class="btn btn-success btn-link"
@@ -106,18 +103,14 @@
                         <strong>School Year:</strong> {{ $selectedMedicalRecord->school_year }}<br>
                         <strong>Semester:</strong> {{ $selectedMedicalRecord->semester }}<br>
                     </p>
-                    <p>
-                        <strong>Hematology Result:</strong> {{ $selectedMedicalRecord->hematology_result }}{{ $selectedMedicalRecord->hematology_result=='normal'?'':', ' }}{{ $selectedMedicalRecord->hematology_abnormality }}<br>
-                        <strong>Hematology Remarks:</strong> {{ $selectedMedicalRecord->hematology_remarks??'None' }}
-                    </p>
-                    <p>
-                        <strong>Urinalysis Result:</strong> {{ $selectedMedicalRecord->urinalysis_result }}{{ $selectedMedicalRecord->urinalysis_result=='normal'?'':', ' }}{{ $selectedMedicalRecord->urinalysis_abnormality }}<br>
-                        <strong>Urinalysis Remarks:</strong> {{ $selectedMedicalRecord->urinalysis_remarks??'None' }}
-                    </p>
-                    <p>
-                        <strong>X-ray Result:</strong> {{ $selectedMedicalRecord->xray_result }}{{ $selectedMedicalRecord->xray_result=='normal'?'':', ' }}{{ $selectedMedicalRecord->xray_abnormality }}<br>
-                        <strong>X-ray Remarks:</strong> {{ $selectedMedicalRecord->xray_remarks??'None' }}
-                    </p>
+                    @if($selectedMedicalRecord->test_results != NULL)
+                        @foreach (json_decode($selectedMedicalRecord->test_results, true) as $testName => $result)
+                            <p>
+                                <strong>{{ $testName }} Result:</strong> {{ $result['result'] }}{{ $result['result'] == 'Normal' ? '' : ', ' }}{{ $result['abnormality'] ?? 'None' }}<br>
+                                <strong>{{ $testName }} Remarks:</strong> {{ $result['remarks'] ?? 'None' }}
+                            </p>
+                        @endforeach
+                    @endif
                     <p><strong>General Condition:</strong> {{ $selectedMedicalRecord->condition??'None' }}</p>
                     <p><strong>Additional Comments:</strong> {{ $selectedMedicalRecord->additional_comments??'None' }}</p>
                 </div>
@@ -141,5 +134,10 @@
     window.addEventListener('show-modal', event => {
         var myModal = new bootstrap.Modal(document.getElementById('medicalDetailsModal'));
         myModal.show();
+    });
+
+    window.addEventListener('open-preview-tab', event => {
+        const url = event.detail[0].url;
+        window.open(url, '_blank'); // open in new tab
     });
 </script>

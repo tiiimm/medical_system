@@ -16,6 +16,7 @@ class Calendar extends Component
     public $eventDate = '';
     public $semester;
     public $school_year;
+    public $slots;
     public $medicalStartDate;
     public $medicalEndDate;
 
@@ -26,11 +27,13 @@ class Calendar extends Component
         if ($systemSettings) {
             $this->semester = $systemSettings->semester;
             $this->school_year = $systemSettings->school_year;
+            $this->slots = $systemSettings->slots;
             $this->medicalStartDate = Carbon::parse($systemSettings->medical_start);
             $this->medicalEndDate = Carbon::parse($systemSettings->medical_end);
         } else {
             $this->semester = null;
             $this->school_year = null;
+            $this->slots = null;
             $this->medicalStartDate = null;
             $this->medicalEndDate = null;
         }
@@ -80,6 +83,10 @@ class Calendar extends Component
 
     public function getEventsForDay(Carbon $specificDate)
     {
+        if ($specificDate->isPast() && !$specificDate->isToday()) {
+            return [];
+        }
+    
         if ($specificDate->isSunday()) {
             return [];
         }
@@ -89,9 +96,15 @@ class Calendar extends Component
         }
 
         $events = [];
-        $totalSlotsPerDay = 250; 
+        $totalSlotsPerDay = $this->slots; 
+        $currentTime = now();
+        $isToday = $specificDate->isToday();
 
         foreach (['am', 'pm'] as $schedule) {
+            if ($isToday && $schedule === 'am' && $currentTime->hour >= 12) {
+                continue;
+            }
+
             $bookedAppointments = Appointment::where('appointment_date', $specificDate->toDateString())
                 ->where('appointment_schedule', strtoupper($schedule))    
                 ->count();

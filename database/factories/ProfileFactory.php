@@ -22,7 +22,8 @@ class ProfileFactory extends Factory
             'first_name' => fake()->firstName(),
             'middle_name' => fake()->lastName(),
             'extension_name' => fake()->randomElement(['Jr.', 'Sr.', 'III', '']),
-            'contact_number' => fake()->phoneNumber(),
+            'contact_number' => '09611875658',
+            'civil_status' => 'Single',
             'address' => fake()->address(),
             'profile_photo_path' => null, // Can be a URL or file path
             'zppsu_number' => fake()->unique()->numerify('202#-#####'),

@@ -14,10 +14,12 @@ class Register extends Component
     public $password = '';
     public $termsAccepted = false;
 
-    protected $rules=[
+    protected $rules = [
+    'termsAccepted' => 'accepted', // Add this
     'username' => 'required|min:6',
     'email' => 'required|email|unique:users,email',
-    'password' => 'required|min:6',];
+    'password' => 'required|min:6',
+];
 
 
     public function store(){

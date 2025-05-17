@@ -158,6 +158,15 @@
                 </a>
             </li>
             <li class="nav-item">
+                <a class="nav-link text-white {{ str_starts_with(Route::currentRouteName(), 'appointment-list') ? ' active bg-gradient-primary' : '' }} "
+                    href="{{ route('appointment-list') }}">
+                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="material-icons opacity-10">checklist</i>
+                    </div>
+                    <span class="nav-link-text ms-1">Appointment List</span>
+                </a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link text-white {{ Route::currentRouteName() == 'medical-records' ? ' active bg-gradient-primary' : '' }} "
                     href="{{ route('medical-records') }}">
                     <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">

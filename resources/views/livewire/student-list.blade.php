@@ -71,7 +71,6 @@
                                     <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">NAME</th>
                                     <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" style="width: 8%;">EMAIL</th>
                                     <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">CAMPUS</th>
-                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">COLLEGE</th>
                                     <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">PROGRAM</th>
                                     <th class="text-secondary opacity-7"></th>
                                 </tr>
@@ -103,20 +102,17 @@
                                             <p class="text-xs text-secondary mb-0">{{ $user->student_information->campus->name }}</p>
                                         </td>
                                         <td class="align-middle text-sm">
-                                            <p class="text-xs text-secondary mb-0">{{ $user->student_information->program->college->abbreviation }}</p>
-                                        </td>
-                                        <td class="align-middle text-sm">
                                             <p class="text-xs text-secondary mb-0">{{ $user->student_information->program->abbreviation }}</p>
                                         </td>
                                         <td class="align-middle">
-                                            <a rel="tooltip" class="btn btn-success btn-link" href="" data-original-title="" title="">
+                                            {{-- <a rel="tooltip" class="btn btn-success btn-link" href="" data-original-title="" title="">
                                                 <i class="material-icons">edit</i>
                                                 <div class="ripple-container"></div>
-                                            </a>
-                                            <a wire:click="openModal('{{ $user['id'] }}')" class="btn btn-warning btn-link" data-original-title="View Details" title="View Details">
+                                            </a> --}}
+                                            {{-- <a wire:click="openModal('{{ $user['id'] }}')" class="btn btn-warning btn-link" data-original-title="View Details" title="View Details">
                                                 <i class="material-icons">search</i>
-                                            </a>
-                                            <a wire:click="showDetails('{{ $user['id'] }}')" class="btn btn-secondary btn-link" data-original-title="Update Status" title="Update Status">
+                                            </a> --}}
+                                            <a wire:click="showDetails('{{ $user['id'] }}')" class="btn btn-success btn-link" data-original-title="Update Status" title="Update Status">
                                                 <i class="material-icons">east</i>
                                             </a>
                                         </td>

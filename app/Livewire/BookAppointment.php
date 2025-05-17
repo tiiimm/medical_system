@@ -37,7 +37,11 @@ class BookAppointment extends Component
             'status' => 'Pending',
         ]);
     
-        $this->sendSms($this->formatPhoneNumber($user->profile->contact_number), $date, $schedule, $appointmentNumber);
+        // $this->sendSms($this->formatPhoneNumber($user->profile->contact_number), $date, $schedule, $appointmentNumber);
+
+        $message = 'Your appointment for '.$date.' '.$schedule.' is successfully booked. Your appointment number is '.$appointmentNumber;
+        $this->js("alert(".json_encode($message).")");
+        return redirect('/book-appointment');
     }
     
     private function generateAppointmentNumber($date, $schedule)
@@ -64,7 +68,7 @@ class BookAppointment extends Component
     {
         $sid = getenv('TWILIO_ACCOUNT_SID');
         $authToken = getenv('TWILIO_AUTH_TOKEN');
-        $from = '+13613154818';
+        $from = getenv('TWILIO_FROM_NUMBER');;
         $to = $contactNumber;
     
         $url = 'https://api.twilio.com/2010-04-01/Accounts/' . $sid . '/Messages.json';
@@ -72,7 +76,8 @@ class BookAppointment extends Component
         $data = [
             'To' => $to,
             'From' => $from,
-            'Body' => 'Successful appointment booking! Your appointment is on '.$date.' '.$schedule.'. You are number '.$appointmentNumber,
+            'Body' => 'Your appointment for '.$date.' '.$schedule.' is successfully booked. Your appointment number is '.$appointmentNumber,
+            // 'Body' => 'Successful appointment booking! Your appointment is on '.$date.' '.$schedule.'. You are number '.$appointmentNumber,
         ];
     
         $ch = curl_init();

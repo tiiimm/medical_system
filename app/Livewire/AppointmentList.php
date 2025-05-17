@@ -5,17 +5,21 @@ namespace App\Livewire;
 use App\Models\Appointment;
 use Carbon\Carbon;
 use Livewire\Component;
+use Illuminate\Support\Facades\Auth;
 
 class AppointmentList extends Component
 {
     public $selectedAppointment = null;
     public $appointmentId;
+    public $appointment;
     public $status;
     public $showTodayOnly = false;
+    public $userRole;
 
     public function openStatusUpdateModal($appointmentId)
     {
         $this->appointmentId = $appointmentId;
+        $this->appointment = Appointment::find($appointmentId);
         $this->dispatch('showModal');
     }
 
@@ -29,8 +33,8 @@ class AppointmentList extends Component
             'status' => $this->status,
             'updated_by' =>auth()->user()->id
         ]);
-
-        $this->sendSms($this->formatPhoneNumber($appointment->student_information->user->profile->contact_number));
+        
+        // if ($this->status == 'Waiting for result') $this->sendSms($this->formatPhoneNumber($appointment->student_information->user->profile->contact_number));
 
         $this->js("alert('Successfully updated!')");
         return redirect('/appointment-list');
@@ -49,7 +53,7 @@ class AppointmentList extends Component
     {
         $sid = getenv('TWILIO_ACCOUNT_SID');
         $authToken = getenv('TWILIO_AUTH_TOKEN');
-        $from = '+13613154818';
+        $from = getenv('TWILIO_FROM_NUMBER');;
         $to = $contactNumber;
     
         $url = 'https://api.twilio.com/2010-04-01/Accounts/' . $sid . '/Messages.json';
@@ -82,6 +86,13 @@ class AppointmentList extends Component
         return redirect('/appointment-list/result')->with('selectedAppointment', $this->selectedAppointment);
     }
 
+    public function uploadResults($appointmentId)
+    {
+        $this->selectedAppointment = Appointment::find($appointmentId);
+
+        return redirect('/appointment-list/student-result')->with('selectedAppointment', $this->selectedAppointment);
+    }
+
     public function goBackToList()
     {
         $this->selectedAppointment = null;
@@ -96,14 +107,26 @@ class AppointmentList extends Component
     public function render()
     {
         $today = Carbon::today()->toDateString();
+        $userRole = auth()->user()->role;
 
-        $appointments = Appointment::with('user.profile', 'student_information')
+        if ($userRole == 'student') {
+            $appointments = auth()->user()->appointments()->with('user.profile', 'student_information')
             ->when($this->showTodayOnly, function ($query) use ($today) {
                 return $query->whereDate('appointment_date', $today);
             })
             ->whereNotIn('status', ['Result Posted']) // Exclude specific statuses
             ->orderBy('appointment_date', 'asc')
             ->get();
+        }
+        else {
+            $appointments = Appointment::with('user.profile', 'student_information')
+                ->when($this->showTodayOnly, function ($query) use ($today) {
+                    return $query->whereDate('appointment_date', $today);
+                })
+                ->whereNotIn('status', ['Result Posted']) // Exclude specific statuses
+                ->orderBy('appointment_date', 'asc')
+                ->get();
+        }
 
         foreach ($appointments as $appointment) {
             $appointment->student_number = $appointment->user->profile->zppsu_number;

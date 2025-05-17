@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DocumentPreviewController;
 use App\Livewire\Auth\ForgotPassword;
 use App\Livewire\Auth\Login;
 use App\Livewire\Auth\Register;
@@ -30,6 +31,7 @@ use App\Livewire\BookAppointment;
 use App\Livewire\AppointmentList;
 use App\Livewire\SystemSettings;
 use App\Livewire\AppointmentList\AppointmentResult;
+use App\Livewire\AppointmentList\AppointmentStudentResult;
 use App\Livewire\DrrmoStaffList;
 use App\Livewire\DrrmoStaffList\EditDrrmoStaff;
 use App\Livewire\DrrmoStaffList\NewDrrmoStaff;
@@ -43,6 +45,8 @@ Route::get('medical-lookup', MedicalLookup::class)->name('medical-lookup');
 Route::get('medical-status/{encryptedId}', MedicalStatus::class)->name('medical-status');
 Route::get('sign-up', Register::class)->middleware('guest')->name('register');
 Route::get('sign-in', Login::class)->middleware('guest')->name('login');
+
+Route::get('/document/preview', [DocumentPreviewController::class, 'preview']);
 
 Route::group(['middleware' => 'auth'], function () {
     Route::get('setup-account', SetupAccount::class)->name('setup-account');
@@ -75,6 +79,7 @@ Route::group(['middleware' => 'auth'], function () {
         
         Route::get('appointment-list', AppointmentList::class)->name('appointment-list');
         Route::get('appointment-list/result', AppointmentResult::class)->name('appointment-list/result');
+        Route::get('appointment-list/student-result', AppointmentStudentResult::class)->name('appointment-list/student-result');
         
         Route::get('appointment-history', AppointmentHistory::class)->name('appointment-history');
         Route::get('book-appointment', BookAppointment::class)->name('book-appointment');

@@ -7,19 +7,21 @@
                         <h4 class="text-white mx-3"><strong>Appointment List</strong></h6>
                     </div>
                 </div>
-                <div class="row align-items-center justify-content-end mb-3">
-                    <div class="col-auto">
-                        <div class="form-check form-switch d-flex align-items-center me-3">
-                            <input class="form-check-input" type="checkbox" id="toggle" wire:click="toggleShowTodayOnly">
-                            <label class="form-check-label mb-0 ms-2" for="toggle">Show Today Only</label>
+                @if(auth()->check() && !auth()->user()->hasRole('student'))
+                    <div class="row align-items-center justify-content-end mb-3">
+                        <div class="col-auto">
+                            <div class="form-check form-switch d-flex align-items-center me-3">
+                                <input class="form-check-input" type="checkbox" id="toggle" wire:click="toggleShowTodayOnly">
+                                <label class="form-check-label mb-0 ms-2" for="toggle">Show Today Only</label>
+                            </div>
+                        </div>
+                        <div class="col-auto me-3 my-3 text-end">
+                            <a class="btn bg-gradient-dark mb-0" href="javascript:;">
+                                <i class="material-icons text-sm">add</i>&nbsp;&nbsp;Add New Record
+                            </a>
                         </div>
                     </div>
-                    <div class="col-auto me-3 my-3 text-end">
-                        <a class="btn bg-gradient-dark mb-0" href="javascript:;">
-                            <i class="material-icons text-sm">add</i>&nbsp;&nbsp;Add New Record
-                        </a>
-                    </div>
-                </div>
+                @endif
                 <div class="card-body-fit px-0 pb-2">
                     <div class="table-responsive p-0">
                         <table class="table align-items-center mb-0">
@@ -31,10 +33,10 @@
                                     </th>
                                     <th
                                         class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" style="width:10%;">
-                                        APPOINTMENT DATE</th>
+                                        DATE</th>
                                     <th
-                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" style="width:10%;">
-                                        APPOINTMENT NUMBER</th>
+                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" style="width:5%;">
+                                        APT #NO</th>
                                     <th
                                         class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" style="width:10%;">
                                         STUDENT NUMBER</th>
@@ -92,13 +94,19 @@
                                     </td>
                                     <td class="align-middle">
                                         <!-- Update Status Button -->
-                                        @if($appointment['status'] != 'Result Posted')
+                                        @if(auth()->check() && auth()->user()->hasRole('student'))
+                                        <a wire:click="uploadResults('{{ $appointment['id'] }}')" class="btn btn-secondary btn-link"
+                                           data-original-title="Upload Results" title="Upload Results">
+                                            <i class="material-icons">upload</i>
+                                        </a>
+                                        @endif
+                                        @if(auth()->check() && !auth()->user()->hasRole('student') && $appointment['status'] != 'Result Posted')
                                         <a wire:click="openStatusUpdateModal('{{ $appointment['id'] }}')" class="btn btn-warning btn-link"
                                            data-original-title="Update Status" title="Update Status">
                                             <i class="material-icons">update</i>
                                         </a>
                                         @endif
-                                        @if(auth()->check() && auth()->user()->hasRole('medical staff') && $appointment['status'] === 'Waiting for result')
+                                        @if(auth()->check() && auth()->user()->hasRole('medical staff'))
                                         <a wire:click="showDetails('{{ $appointment['id'] }}')" class="btn btn-secondary btn-link"
                                            data-original-title="Update Status" title="Update Status">
                                             <i class="material-icons">east</i>
@@ -125,9 +133,14 @@
                     <div class="relative">
                         <select wire:model="status" class="form-select border border-1 p-2 ps-2" data-style="select-with-transition" title="" data-size="100" id="status">
                             <option value="">Select Status</option>
-                            <option value="Done Urinalysis">Done Urinalysis</option>
-                            <option value="Done Blood Test">Done Blood Test</option>
-                            <option value="Done X-Ray">Done X-Ray</option>
+                            <option value="Done Drug Test">Done Drug Test</option>
+                            <option value="Done Chest X-Ray">Done Chest X-Ray</option>
+                            @if($appointment?->student_information->year_level == '1st year')<option value="Done Blood Test">Done Blood Test</option>@endif
+                            @if($appointment?->student_information->major->food_related)
+                                <option value="Done Hepatitis A">Done Hepatitis A</option>
+                                <option value="Done Stool Exam">Done Stool Exam</option>
+                            @endif
+                            {{-- <option value="Done Urinalysis">Done Urinalysis</option> --}}
                             <option value="Waiting for result">Waiting for result</option>
                             <option value="Result Posted">Result Posted</option>
                         </select>

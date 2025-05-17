@@ -33,46 +33,50 @@
                     <form wire:submit="store"> 
                         @php
                             $tests = [
-                                'Hematology' => [
-                                    'model' => 'hematology',
-                                    'abnormalities' => [
-                                        'Anemia',              
-                                        'Leukocytosis',        
-                                        'Leukopenia',          
-                                        'Thrombocytopenia'     
-                                    ]
-                                ],
-                                'Urinalysis' => [
-                                    'model' => 'urinalysis',
-                                    'abnormalities' => [
-                                        'UTI',                 
-                                        'Dehydration',         
-                                        'Kidney Disease',      
-                                        'Diabetes',            
-                                        'Bladder Infection',   
-                                        'Proteinuria'          
-                                    ]
-                                ],
                                 'XRay' => [
                                     'model' => 'xray',
                                     'abnormalities' => [
-                                        'Tuberculosis',        
-                                        'Pneumonia',           
-                                        'Broken Bones',        
-                                        'Lung Scarring',       
-                                        'COPD'                 
+                                        'Tuberculosis',
+                                        'Pneumonia',
+                                        'Broken Bones',
+                                        'Lung Scarring',
+                                        'COPD'
                                     ]
                                 ],
                                 'Drug Test' => [
                                     'model' => 'drugtest',
                                     'abnormalities' => [
-                                        'Substance Abuse',     
-                                        'Prescription Drug Abuse', 
-                                        'Illegal Drug Use'     
+                                        'Substance Abuse',
+                                        'Prescription Drug Abuse',
+                                        'Illegal Drug Use'
                                     ]
                                 ]
-
                             ];
+
+                            // Conditionally add tests for food-related majors
+                            if ($selectedUser->student_information->major->food_related) {
+                                $tests['Stool Exam'] = [
+                                    'model' => 'stool_exam',
+                                    'abnormalities' => [
+                                        'Parasitic Infection',
+                                        'Blood in Stool',
+                                        'Bacterial Infection',
+                                        'Malabsorption Disorder',
+                                        'Colon Cancer Indications'
+                                    ]
+                                ];
+                                
+                                $tests['Hepatitis A'] = [
+                                    'model' => 'hepatitis_a',
+                                    'abnormalities' => [
+                                        'Liver Inflammation',
+                                        'Jaundice',
+                                        'Fatigue',
+                                        'Loss of Appetite',
+                                        'Abdominal Pain'
+                                    ]
+                                ];
+                            }
                         @endphp
 
                         @foreach ($tests as $test => $data)
@@ -83,7 +87,7 @@
                                 <div class="col-2">
                                     <select wire:model.lazy="{{ $data['model'] }}_result" class="form-select border border-1 p-2 ps-2">
                                         <option value="">Select Result</option>
-                                        @if ($test != 'Drug Test')
+                                        @if ($test != 'Drug Test' && $test != 'Hepatitis A')
                                         <option value="Normal">Normal</option>
                                         <option value="Abnormal">Abnormal</option>
                                         @else
@@ -109,11 +113,11 @@
                                     </div>
                                 @endif
                                 <div class="col-5">
-                                    <div class="input-group input-group-outline @if(!empty(${'remarks_' . $data['model']})) is-filled @endif">
+                                    <div class="input-group input-group-outline @if(!empty(${$data['model'] . '_remarks'})) is-filled @endif">
                                         <label class="form-label">Remarks</label>
-                                        <input wire:model.live="remarks_{{ $data['model'] }}" type="text" class="form-control">
+                                        <input wire:model.live="{{ $data['model'] . '_remarks' }}" type="text" class="form-control">
                                     </div>
-                                    @error('remarks_' . $data['model'])
+                                    @error($data['model'] . '_remarks')
                                         <p class="text-danger">{{ $message }}</p>
                                     @enderror
                                 </div>
@@ -139,24 +143,6 @@
                                     <p class="text-danger">{{ $message }}</p>
                                 @enderror
                             </div>
-                        </div>
-
-                        <!-- File Upload Section -->
-                        <div class="row mt-4 px-6">
-                            <div class="custom-file-upload">
-                                <input wire:model="result_file" type="file" class="form-control d-none" id="result_file" accept=".pdf,.jpg,.jpeg,.png">
-                                <label for="result_file" class="upload-label">Choose Files</label>
-                                <span class="file-name mt-1">
-                                    @if($result_file)
-                                        {{ $result_file->getClientOriginalName() }}
-                                    @else
-                                        No file selected
-                                    @endif
-                                </span>
-                            </div>
-                            @error('result_file')
-                                <p class="text-danger">{{ $message }}</p>
-                            @enderror
                         </div>
 
                         <!-- Submit Button -->

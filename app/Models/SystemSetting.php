@@ -11,5 +11,6 @@ class SystemSetting extends Model
         'school_year',
         'medical_start',
         'medical_end',
+        'slots',
     ];
 }

@@ -23,6 +23,7 @@
     <!-- CSS Files -->
     <link id="pagestyle" href="{{ asset('assets') }}/css/material-dashboard.css?v=3.0.0" rel="stylesheet" />
     <link id="pagestyle" href="{{ asset('assets') }}/css/custom-design.css" rel="stylesheet" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     @livewireStyles
 </head>
 
@@ -47,7 +48,7 @@
     <!-- Github buttons -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
-    <script src="{{ asset('assets') }}/js/material-dashboard.min.js?v=3.0.0"></script>
+    <script src="{{ asset('assets/js/material-dashboard.min.js?v=3.0.0') }}"></script>
     @livewireScripts
 </body>
 

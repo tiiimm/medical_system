@@ -44,7 +44,7 @@
 
                                     <!-- Terms and Conditions Section -->
                                     <div class="form-check form-check-info text-start ps-0 mt-3">
-                                        <input wire:model="termsAccepted" class="form-check-input" type="checkbox" value=""
+                                        <input wire:model.live="termsAccepted" class="form-check-input" type="checkbox" value=""
                                             id="flexCheckDefault">
                                         <label class="form-check-label" for="flexCheckDefault">
                                             I agree to the <a href="javascript:;" data-bs-toggle="collapse" data-bs-target="#termsCondition" class="text-dark font-weight-bolder">Terms and Conditions</a>
@@ -60,8 +60,7 @@
 
                                     <div class="text-center">
                                         <button type="submit" 
-                                                class="btn btn-lg bg-gradient-primary btn-lg w-100 mt-4 mb-0" 
-                                                :disabled="!termsAccepted">Sign Up</button>
+                                                class="btn btn-lg bg-gradient-primary btn-lg w-100 mt-4 mb-0">Sign Up</button>
                                     </div>
                                 </form>
                             </div>

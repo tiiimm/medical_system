@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('middle_name')->default('');
             $table->string('extension_name')->default('');
             $table->string('contact_number');
+            $table->string('civil_status');
             $table->string('address');
             $table->string('profile_photo_path', 2048)->nullable();
             $table->string('zppsu_number')->nullable();
