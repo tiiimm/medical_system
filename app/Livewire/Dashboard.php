@@ -22,6 +22,9 @@ class Dashboard extends Component
 
     public function mount()
     {
+        if (!auth()->user()->hasProfile()) {
+            return $this->redirect('/setup-account', navigate: true);
+        }
         $this->first_access = session('first_access')??false;
         $this->totalStudentMedicalCount = MedicalResults::count();
 

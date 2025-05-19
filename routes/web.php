@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MedicalResultController;
 use App\Http\Controllers\DocumentPreviewController;
 use App\Livewire\Auth\ForgotPassword;
 use App\Livewire\Auth\Login;
@@ -18,6 +19,7 @@ use App\Livewire\MedicalStaffList;
 use App\Livewire\MedicalStaffList\EditMedicalStaff;
 use App\Livewire\MedicalStaffList\NewMedicalStaff;
 use App\Livewire\MedicalStatus;
+use App\Livewire\MedicalProcess;
 use App\Livewire\Notifications;
 use App\Livewire\Profile;
 use App\Livewire\SetupAccount;
@@ -58,6 +60,8 @@ Route::group(['middleware' => 'auth'], function () {
 
         return $next($request);
     }], function () {
+        Route::get('/medical-results/view/{id}', [MedicalResultController::class, 'viewAll']);
+        
         Route::get('system-settings', SystemSettings::class)->name('system-settings');
         Route::get('user-profile', UserProfile::class)->name('user-profile');
         Route::get('user-management', UserManagement::class)->name('user-management');
@@ -84,6 +88,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('appointment-history', AppointmentHistory::class)->name('appointment-history');
         Route::get('book-appointment', BookAppointment::class)->name('book-appointment');
 
+        Route::get('medical-process', MedicalProcess::class)->name('medical-process');
         Route::get('medical-records', MedicalRecords::class)->name('medical-records');
         Route::get('dashboard', Dashboard::class)->name('dashboard');
         Route::get('profile', Profile::class)->name('profile');

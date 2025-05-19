@@ -5,10 +5,7 @@ namespace App\Livewire\AppointmentList;
 use App\Models\MedicalResults;
 use Livewire\Component;
 use Livewire\WithFileUploads;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Endroid\QrCode\QrCode;
-use Endroid\QrCode\Writer\PngWriter;
-use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Auth;
 
 class AppointmentStudentResult extends Component
 {
@@ -17,31 +14,43 @@ class AppointmentStudentResult extends Component
     public $selectedAppointment;
     public $selectedUser;
 
-    public $result_file;
-
-    protected function rules()
-    {
-        $rules = [
-            'result_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
-        ];
-
-        return $rules;
-    }
+    public $result_files = [];
 
     public function store()
     {
-        $this->validate();
+        $this->validate([
+            'result_files.*' => 'nullable|file|mimes:pdf,jpg,jpeg,png',
+        ], [
+            'result_files.*.mimes' => 'Only PDF, JPG, JPEG, and PNG files are allowed.',
+        ]);
 
-        // Save the file if uploaded
-        if ($this->result_file) {
-            $filePath = $this->result_file->store('documents', 'public');
+        // Total size validation (max 2MB)
+        $totalSize = collect($this->result_files)->sum(function ($file) {
+            return $file->getSize(); // in bytes
+        });
+
+        if ($totalSize > 2 * 1024 * 1024) {
+            $this->reset('result_files');
+            $this->addError('result_files', 'The total size of selected files must not exceed 2MB.');
+            return;
         }
 
-        // Example of storing data (adjust to your database structure)
+        $filePaths = [];
+
+        // Save each uploaded file
+        foreach ($this->result_files as $file) {
+            $filePaths[] = $file->store('documents', 'public');
+        }
+
+        $paths = $filePaths[0] ? json_encode($filePaths) : null;
+
+        // Example: store only the first file path, or handle multiple records if needed
         $medical_result = $this->selectedAppointment->medical_results()->create([
-            'result_file_path' => $filePath ?? null,
+            'result_file_path' => $paths,
             'semester' => now()->month <= 6 ? '2nd sem' : '1st sem',
-            'school_year' => now()->month <= 6 ? (now()->year - 1) . '-' . now()->year : now()->year . '-' . (now()->year + 1),
+            'school_year' => now()->month <= 6
+                ? (now()->year - 1) . '-' . now()->year
+                : now()->year . '-' . (now()->year + 1),
             'upload_date' => now(),
             'reviewed_by' => auth()->user()->id,
             'uploaded_by' => auth()->user()->id
@@ -50,93 +59,27 @@ class AppointmentStudentResult extends Component
         session()->flash('success', 'Medical results saved successfully!');
         $this->js("alert('Medical results saved successfully!')");
 
-        // $this->sendSms($this->formatPhoneNumber($this->selectedAppointment->student_information->user->profile->contact_number),$medical_result);
+        $this->selectedAppointment->update([
+            'status' => 'Results submitted'
+        ]);
+        $this->selectedAppointment->logs()->create([
+            'status' => 'Results submitted',
+            'updated_by' =>auth()->user()->id
+        ]);
 
-        $this->generateCertificate($medical_result->id);
         return redirect('/appointment-list')->with(true);
     }
 
     public function mount()
     {
         // Check if selectedAppointment exists in the session
-        $this->selectedAppointment = session('selectedAppointment');
-        $this->selectedUser = $this->selectedAppointment->student_information->user;
+        $this->selectedAppointment = auth()->user()->appointments()->latest()->first();
+        $this->selectedUser = auth()->user();
 
         // If no user is selected, redirect back to the user list page
         if (!$this->selectedAppointment) {
             return redirect()->route('appointment-list')->with('error', 'No student selected.');
         }
-    }
-
-    public function generateCertificate($medicalResultId)
-    {
-        $encryptedId = Crypt::encryptString($medicalResultId);
-        $medicalResult = MedicalResults::find($medicalResultId)->first();
-
-        $url = route('medical-status', ['encryptedId' => $encryptedId]);
-
-        // Generate the QR code
-        $qrCode = new QrCode($url);
-        $writer = new PngWriter();
-        $qrCodeBinary = $writer->write($qrCode);
-        
-        // Save the QR code as an image or generate a data URL
-        $qrCodeUrl = base64_encode($qrCodeBinary->getString());
-
-        $pdf = PDF::loadView('pdf.medical-certificate', [
-            'studentName' => $medicalResult->appointment->student_information->user->name,
-            'yearLevel' => $medicalResult->appointment->student_information->year_level,
-            'course' => $medicalResult->appointment->student_information->program->name,
-            'dateReleased' => $medicalResult->appointment->appointment_date,
-            'qrCodeUrl' => $qrCodeUrl,
-        ]);
-    
-        return response()->streamDownload(function () use ($pdf) {
-            echo $pdf->stream();
-        }, 'medical-certificate.pdf');
-
-        // // Option 2: Download the PDF directly
-        // // return $pdf->download('medical-certificate.pdf');
-    }
-
-    function formatPhoneNumber($phoneNumber)
-    {
-        if (substr($phoneNumber, 0, 2) === '09' && strlen($phoneNumber) === 11) {
-            return '+63' . substr($phoneNumber, 1);
-        }
-
-        return $phoneNumber;
-    }
-
-    private function sendSms($contactNumber, $medical_result)
-    {
-        $sid = getenv('TWILIO_ACCOUNT_SID');
-        $authToken = getenv('TWILIO_AUTH_TOKEN');
-        $from = getenv('TWILIO_FROM_NUMBER');;
-        $to = $contactNumber;
-    
-        $url = 'https://api.twilio.com/2010-04-01/Accounts/' . $sid . '/Messages.json';
-    
-        $data = [
-            'To' => $to,
-            'From' => $from,
-            'Body' => 'This is to inform you that your results have been posted. You may check the portal to view your results',
-        ];
-    
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_USERPWD, $sid . ':' . $authToken);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
-        
-        $response = curl_exec($ch);
-        curl_close($ch);
-        
-        if ($response === false) {
-            $this->js('Twilio SMS Error: ' . curl_error($ch));
-        }
-        $this->generateCertificate($medical_result->id);
     }
 
     public function render()

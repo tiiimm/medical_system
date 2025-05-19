@@ -13,17 +13,21 @@
                         <!-- File Upload Section -->
                         <div class="row mt-4 px-6">
                             <div class="custom-file-upload">
-                                <input wire:model="result_file" type="file" class="form-control d-none" id="result_file" accept=".pdf,.jpg,.jpeg,.png">
-                                <label for="result_file" class="upload-label">Choose Files</label>
+                                <input wire:model="result_files" type="file" class="form-control d-none" id="result_files" accept=".pdf,.jpg,.jpeg,.png" multiple>
+                                <label for="result_files" class="upload-label">Choose Files</label>
                                 <span class="file-name mt-1">
-                                    @if($result_file)
-                                        {{ $result_file->getClientOriginalName() }}
+                                    @if ($result_files && count($result_files) > 0)
+                                        <ul class="list-unstyled mb-0">
+                                            @foreach ($result_files as $file)
+                                                <li>{{ $file->getClientOriginalName() }}</li>
+                                            @endforeach
+                                        </ul>
                                     @else
                                         No file selected
                                     @endif
                                 </span>
                             </div>
-                            @error('result_file')
+                            @error('result_files')
                                 <p class="text-danger">{{ $message }}</p>
                             @enderror
                         </div>

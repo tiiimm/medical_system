@@ -44,7 +44,7 @@
                                         class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                         NAME</th>
                                     <th
-                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                        class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" style="width:10%;">
                                         CONTACT NUMBER</th>
                                     <th
                                         class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
@@ -56,7 +56,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($appointments as $index => $appointment)
+                                @forelse ($appointments as $index => $appointment)
                                 <tr>
                                     <td class="align-middle text-center">
                                         <div class="d-flex flex-column justify-content-center">
@@ -94,19 +94,19 @@
                                     </td>
                                     <td class="align-middle">
                                         <!-- Update Status Button -->
-                                        @if(auth()->check() && auth()->user()->hasRole('student'))
+                                        @if(auth()->check() && auth()->user()->hasRole('student') && $appointment['status'] == 'Waiting for result')
                                         <a wire:click="uploadResults('{{ $appointment['id'] }}')" class="btn btn-secondary btn-link"
                                            data-original-title="Upload Results" title="Upload Results">
                                             <i class="material-icons">upload</i>
                                         </a>
                                         @endif
-                                        @if(auth()->check() && !auth()->user()->hasRole('student') && $appointment['status'] != 'Result Posted')
+                                        @if(auth()->check() && !auth()->user()->hasRole('student') && $appointment['status'] != 'Results Verified' && $appointment['status'] != 'Results submitted')
                                         <a wire:click="openStatusUpdateModal('{{ $appointment['id'] }}')" class="btn btn-warning btn-link"
                                            data-original-title="Update Status" title="Update Status">
                                             <i class="material-icons">update</i>
                                         </a>
                                         @endif
-                                        @if(auth()->check() && auth()->user()->hasRole('medical staff'))
+                                        @if(auth()->check() && auth()->user()->hasRole('medical staff') && $appointment['status'] == 'Results submitted')
                                         <a wire:click="showDetails('{{ $appointment['id'] }}')" class="btn btn-secondary btn-link"
                                            data-original-title="Update Status" title="Update Status">
                                             <i class="material-icons">east</i>
@@ -114,7 +114,13 @@
                                         @endif
                                     </td>
                                 </tr>
-                                @endforeach
+                                @empty
+                                <tr>
+                                    <td colspan="12" class="text-center">
+                                        <p class="text-sm text-muted my-2">No appointments listed</p>
+                                    </td>
+                                </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -133,14 +139,15 @@
                     <div class="relative">
                         <select wire:model="status" class="form-select border border-1 p-2 ps-2" data-style="select-with-transition" title="" data-size="100" id="status">
                             <option value="">Select Status</option>
-                            <option value="Done Drug Test">Done Drug Test</option>
+                            {{-- @if($appointment?->student_information->program->college->abbreviation == "CME") --}}
+                            <option value="Done Urine Test">Done Urine Test</option>
                             <option value="Done Chest X-Ray">Done Chest X-Ray</option>
-                            @if($appointment?->student_information->year_level == '1st year')<option value="Done Blood Test">Done Blood Test</option>@endif
+
+                            @if($appointment?->student_information->year_level == '1st year' || $appointment?->student_information->major->food_related)<option value="Done Blood Test">Done Blood Test</option>@endif
+
                             @if($appointment?->student_information->major->food_related)
-                                <option value="Done Hepatitis A">Done Hepatitis A</option>
-                                <option value="Done Stool Exam">Done Stool Exam</option>
+                                <option value="Done Fecalysis">Done Fecalysis</option>
                             @endif
-                            {{-- <option value="Done Urinalysis">Done Urinalysis</option> --}}
                             <option value="Waiting for result">Waiting for result</option>
                             <option value="Result Posted">Result Posted</option>
                         </select>

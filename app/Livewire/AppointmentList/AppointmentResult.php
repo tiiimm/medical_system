@@ -4,43 +4,55 @@ namespace App\Livewire\AppointmentList;
 
 use App\Models\MedicalResults;
 use Livewire\Component;
-use Livewire\WithFileUploads;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
 use Illuminate\Support\Facades\Crypt;
 
 class AppointmentResult extends Component
-{
-    use WithFileUploads;
-    
+{    
     public $selectedAppointment;
     public $selectedUser;
 
-    public $hepatitis_a_result = 'Negative';
-    public $hepatitis_a_abnormality;
-    public $hepatitis_a_remarks;
-    public $stool_exam_result = 'Normal';
-    public $stool_exam_abnormality;
-    public $stool_exam_remarks;
-    public $xray_result = 'Normal';
-    public $xray_abnormality;
-    public $xray_remarks;
-    public $ishihara_result = 'Normal';
-    public $ishihara_abnormality;
-    public $ishihara_remarks;
-    public $drugtest_result = 'Negative';
-    public $drugtest_abnormality;
-    public $drugtest_remarks;
     public $condition;
     public $additional_comments;
     public $tests = [
-        'hepatitis_a',
-        'stool_exam',
-        'xray',
-        'ishihara',
-        'drugtest'
+        'hepatitis_a' => ['result' => 'Negative', 'abnormality' => null, 'remarks' => null],
+        'hepatitis_b' => ['result' => 'Negative', 'abnormality' => null, 'remarks' => null],
+        'fecalysis' => ['result' => 'Normal', 'abnormality' => null, 'remarks' => null],
+        'xray' => ['result' => 'Normal', 'abnormality' => null, 'remarks' => null],
+        'cbc' => ['result' => 'Normal', 'abnormality' => null, 'remarks' => null],
+        'blood_typing' => ['result' => null, 'abnormality' => null, 'remarks' => null],
+        'ishihara' => ['result' => 'Normal', 'abnormality' => null, 'remarks' => null],
+        'urinalysis' => ['result' => 'Normal', 'abnormality' => null, 'remarks' => null],
+        'drugtest' => ['result' => 'Negative', 'abnormality' => null, 'remarks' => null],
     ];
+
+    public $testDisplayMap = [
+        'hepatitis_a' => 'Hepatitis A',
+        'hepatitis_b' => 'Hepatitis B',
+        'fecalysis' => 'Fecalysis',
+        'xray' => 'Chest XRay',
+        'cbc' => 'CBC',
+        'blood_typing' => 'Blood Typing',
+        'ishihara' => 'Ishihara',
+        'urinalysis' => 'Urinalysis',
+        'drugtest' => 'Drug Test'
+    ];
+
+    public $testAbnormalities = [
+        'hepatitis_a' => ['Hepatitis A Positive'],
+        'hepatitis_b' => ['Hepatitis B Positive'],
+        'fecalysis' => ['Intestinal Parasites', 'Bacterial Infection', 'Occult Blood'],
+        'xray' => ['Tuberculosis', 'Pneumonia', 'Broken Bones', 'Lung Scarring', 'COPD'],
+        'cbc' => ['Anemia', 'Infection', 'Leukemia', 'Vitamin Deficiencies'],
+        'blood_typing' => ['Rare Blood Type'],
+        'ishihara' => ['Color Blindness'],
+        'urinalysis' => ['UTI', 'Kidney Disease', 'Diabetes'],
+        'drugtest' => ['Substance Abuse', 'Prescription Drug Abuse', 'Illegal Drug Use']
+    ];
+
+    public $availableTests = ['xray', 'drugtest'];
 
     protected function rules()
     {
@@ -49,10 +61,10 @@ class AppointmentResult extends Component
             'additional_comments' => 'nullable|string',
         ];
 
-        foreach ($this->tests as $test) {
-            $rules["{$test}_result"] = 'required|string';
-            $rules["{$test}_abnormality"] = "required_if:{$test}_result,abnormal,positive|string|nullable";
-            $rules["{$test}_remarks"] = 'nullable|string';
+        foreach ($this->availableTests as $testName) {
+            $rules["tests.$testName.result"] = 'required|string';
+            $rules["tests.$testName.abnormality"] = "required_if:tests.$testName.result,Abnormal,Positive|string|nullable";
+            $rules["tests.$testName.remarks"] = 'nullable|string';
         }
 
         return $rules;
@@ -62,43 +74,44 @@ class AppointmentResult extends Component
     {
         $this->validate();
 
-        // Save the file if uploaded
-        // if ($this->result_file) {
-        //     $filePath = $this->result_file->store('documents', 'public');
-        // }
-
-        $testResults = [
-            'XRay' => [
-                'result' => $this->xray_result,
-                'abnormality' => $this->xray_abnormality,
-                'remarks' => $this->xray_remarks
-            ],
-            'Drug Test' => [
-                'result' => $this->drugtest_result,
-                'abnormality' => $this->drugtest_abnormality,
-                'remarks' => $this->drugtest_remarks
-            ]
-        ];
+        $testResults = [];
         
-        // Conditionally add 'Hepatitis A' test result if the major is food-related
-        if ($this->selectedAppointment->student_information->major->food_related) {
-            $testResults['Hepatitis A'] = [
-                'result' => $this->hepatitis_a_result,
-                'abnormality' => $this->hepatitis_a_abnormality,
-                'remarks' => $this->hepatitis_a_remarks
-            ];
-            $testResults['Stool Exam'] = [
-                'result' => $this->stool_exam_result,
-                'abnormality' => $this->stool_exam_abnormality,
-                'remarks' => $this->stool_exam_remarks
-            ];
+        // Build test results array based on student's major and year level
+        $isFoodRelated = $this->selectedAppointment->student_information->major->food_related;
+        $isFirstYear = $this->selectedAppointment->student_information->year_level == 1;
+
+        // Always include these tests
+        $testResults['XRay'] = $this->tests['xray'];
+        $testResults['Drug Test'] = $this->tests['drugtest'];
+
+        // Include additional tests based on conditions
+        if ($isFoodRelated) {
+            $testResults['Hepatitis A'] = $this->tests['hepatitis_a'];
+            $testResults['Hepatitis B'] = $this->tests['hepatitis_b'];
+            $testResults['Fecalysis'] = $this->tests['fecalysis'];
+            
+            if ($isFirstYear) {
+                $testResults['CBC'] = $this->tests['cbc'];
+                $testResults['Blood Typing'] = $this->tests['blood_typing'];
+                $testResults['Urinalysis'] = $this->tests['urinalysis'];
+            }
+        } else {
+            if ($isFirstYear) {
+                $testResults['CBC'] = $this->tests['cbc'];
+                $testResults['Blood Typing'] = $this->tests['blood_typing'];
+                $testResults['Urinalysis'] = $this->tests['urinalysis'];
+            }
         }
 
+        // Include Ishihara test if needed (add your condition)
+        $testResults['Ishihara'] = $this->tests['ishihara'];
+
+        // Filter out empty tests
         $testResults = array_filter($testResults, function ($test) {
-            return !empty(array_filter($test)); // Removes tests that have all null/empty values
+            return !empty(array_filter($test));
         });
 
-        // Example of storing data (adjust to your database structure)
+        // Save the medical results
         $medical_result = $this->selectedAppointment->medical_results()->update([
             'test_results' => json_encode($testResults),
             'condition' => $this->condition,
@@ -110,32 +123,47 @@ class AppointmentResult extends Component
             'uploaded_by' => auth()->user()->id
         ]);
 
-        session()->flash('success', 'Medical results saved successfully!');
-        $this->js("alert('Medical results saved successfully!')");
-
+        // Update appointment status
         $this->selectedAppointment->update([
-            'status' => 'Result Posted'
+            'status' => 'Results Verified'
         ]);
+        
         $this->selectedAppointment->logs()->create([
-            'status' => 'Result Posted',
-            'updated_by' =>auth()->user()->id
+            'status' => 'Results Verified',
+            'updated_by' => auth()->user()->id
         ]);
-
-        // $this->sendSms($this->formatPhoneNumber($this->selectedAppointment->student_information->user->profile->contact_number),$medical_result);
-
-        // $this->generateCertificate($medical_result->id);
+        
+        // Uncomment these if needed
+        // $this->sendSms($this->formatPhoneNumber($this->selectedAppointment->student_information->user->profile->contact_number), $medical_result);
+        $this->generateCertificate($this->selectedAppointment->medical_results->id);
+        
         return redirect('/appointment-list')->with(true);
     }
 
     public function mount()
     {
-        // Check if selectedAppointment exists in the session
         $this->selectedAppointment = session('selectedAppointment');
+        if (session('selectedAppointment')) {
+            session()->keep(['selectedAppointment']);
+        }
         $this->selectedUser = $this->selectedAppointment->student_information->user;
 
-        // If no user is selected, redirect back to the user list page
         if (!$this->selectedAppointment) {
             return redirect()->route('appointment-list')->with('error', 'No student selected.');
+        }
+        
+        $isFoodRelated = $this->selectedUser->student_information->major->food_related;
+        $isFirstYear = $this->selectedUser->student_information->year_level == "1st year";
+        
+        if ($isFoodRelated) {
+            array_push($this->availableTests, 'hepatitis_b', 'fecalysis');
+            if ($isFirstYear) {
+                array_push($this->availableTests, 'cbc', 'blood_typing', 'urinalysis');
+            }
+        } else {
+            if ($isFirstYear) {
+                array_push($this->availableTests, 'cbc', 'blood_typing', 'urinalysis');
+            }
         }
     }
 
@@ -154,17 +182,21 @@ class AppointmentResult extends Component
         // Save the QR code as an image or generate a data URL
         $qrCodeUrl = base64_encode($qrCodeBinary->getString());
 
-        $pdf = PDF::loadView('pdf.medical-certificate', [
+        $payload = [
             'studentName' => $medicalResult->appointment->student_information->user->name,
             'yearLevel' => $medicalResult->appointment->student_information->year_level,
             'course' => $medicalResult->appointment->student_information->program->name,
             'dateReleased' => $medicalResult->appointment->appointment_date,
             'qrCodeUrl' => $qrCodeUrl,
+            'document' => 'medical-certificate',
+            'width' => 8.5,
+            'height' => 13,
+        ];
+        $encrypted = Crypt::encrypt($payload);
+
+        $this->dispatch('open-preview-tab', [
+            'url' => '/document/preview?token=' . urlencode($encrypted),
         ]);
-    
-        return response()->streamDownload(function () use ($pdf) {
-            echo $pdf->stream();
-        }, 'medical-certificate.pdf');
 
         // // Option 2: Download the PDF directly
         // // return $pdf->download('medical-certificate.pdf');

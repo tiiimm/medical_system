@@ -56,7 +56,7 @@
                                                                             <div class="fc-daygrid-day-events pb-3">
                                                                                 @foreach ($day['events'] as $event)
                                                                                     <div class="fc-daygrid-event-harness px-3">
-                                                                                        <a wire:click="triggerModal('{{ $event['schedule'] }}', '{{ $event['date'] }}')" class="fc-daygrid-event fc-daygrid-block-event fc-h-event fc-event fc-event-draggable fc-event-resizable fc-event-start fc-event-end fc-event-past bg-gradient-{{ $event['type'] }}">
+                                                                                        <a wire:click="triggerModal('{{ $event['schedule'] }}', '{{ $event['date'] }}', '{{ $event['remaining_slots'] }}')" class="fc-daygrid-event fc-daygrid-block-event fc-h-event fc-event fc-event-draggable fc-event-resizable fc-event-start fc-event-end fc-event-past bg-gradient-{{ $event['type'] }}">
                                                                                             <div class="fc-event-main">
                                                                                                 <div class="fc-event-main-frame">
                                                                                                     <div class="fc-event-title-container text-center">
@@ -96,7 +96,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Date: {{$eventDate}} <br> Schedule: {{ $eventSchedule}}</p>
+                    <p>Date: {{$eventDate}} <br> Schedule: {{ $eventSchedule}} ({{ $eventSlots }} slots left)</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

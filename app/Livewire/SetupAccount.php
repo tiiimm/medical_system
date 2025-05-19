@@ -48,7 +48,7 @@ class SetupAccount extends Component
     public $allergies = []; 
     public $allergy_name = ''; 
     public $triggers = '';
-    public $is_active = true;
+    public $is_active = false;
     public $last_occured = '';
     public $condition_name = '';
     public $treatment = 0;
@@ -103,6 +103,8 @@ class SetupAccount extends Component
         // Clear the input fields after adding
         $this->allergy_name = '';
         $this->triggers = '';
+        $this->is_active = false;
+        $this->last_occured = '';
     }
 
     public function removeAllergy($index)

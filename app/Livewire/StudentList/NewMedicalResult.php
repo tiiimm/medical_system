@@ -4,7 +4,6 @@ namespace App\Livewire\StudentList;
 
 use App\Models\MedicalResults;
 use Livewire\Component;
-use Livewire\WithFileUploads;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
@@ -12,98 +11,104 @@ use Illuminate\Support\Facades\Crypt;
 
 class NewMedicalResult extends Component
 {
-    use WithFileUploads;
-    
     public $selectedUser;
 
-    public $hematology_result = 'Normal';
-    public $hematology_abnormality;
-    public $hematology_remarks;
-    public $urinalysis_result = 'Normal';
-    public $urinalysis_abnormality;
-    public $urinalysis_remarks;
-    public $xray_result = 'Normal';
-    public $xray_abnormality;
-    public $xray_remarks;
-    public $ishihara_result = 'Normal';
-    public $ishihara_abnormality;
-    public $ishihara_remarks;
-    public $drugtest_result = 'Negative';
-    public $drugtest_abnormality;
-    public $drugtest_remarks;
     public $condition;
     public $additional_comments;
-    public $result_file;
-
-    protected $rules = [
-        'hematology_result' => 'required|string',
-        'hematology_abnormality' => 'required_if:hematology_result,abnormal|string|nullable',
-        'hematology_remarks' => 'nullable|string',
-        'urinalysis_result' => 'required|string',
-        'urinalysis_abnormality' => 'required_if:urinalysis_result,abnormal|string|nullable',
-        'urinalysis_remarks' => 'nullable|string',
-        'xray_result' => 'required|string',
-        'xray_abnormality' => 'required_if:xray_result,abnormal|string|nullable',
-        'xray_remarks' => 'nullable|string',
-        'ishihara_result' => 'required|string',
-        'ishihara_abnormality' => 'required_if:ishihara_result,abnormal|string|nullable',
-        'ishihara_remarks' => 'nullable|string',
-        'drugtest_result' => 'required|string',
-        'drugtest_abnormality' => 'required_if:drugtest_result,positive|string|nullable',
-        'drugtest_remarks' => 'nullable|string',
-        'condition' => 'nullable|string',
-        'additional_comments' => 'nullable|string',
-        'result_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+    public $tests = [
+        'hepatitis_a' => ['result' => 'Negative', 'abnormality' => null, 'remarks' => null],
+        'hepatitis_b' => ['result' => 'Negative', 'abnormality' => null, 'remarks' => null],
+        'fecalysis' => ['result' => 'Normal', 'abnormality' => null, 'remarks' => null],
+        'xray' => ['result' => 'Normal', 'abnormality' => null, 'remarks' => null],
+        'cbc' => ['result' => 'Normal', 'abnormality' => null, 'remarks' => null],
+        'blood_typing' => ['result' => null, 'abnormality' => null, 'remarks' => null],
+        'ishihara' => ['result' => 'Normal', 'abnormality' => null, 'remarks' => null],
+        'urinalysis' => ['result' => 'Normal', 'abnormality' => null, 'remarks' => null],
+        'drugtest' => ['result' => 'Negative', 'abnormality' => null, 'remarks' => null],
     ];
+
+    protected function rules()
+    {
+        $rules = [
+            'condition' => 'nullable|string',
+            'additional_comments' => 'nullable|string',
+        ];
+
+        foreach ($this->tests as $testName => $testData) {
+            $rules["tests.$testName.result"] = 'required|string';
+            $rules["tests.$testName.abnormality"] = "required_if:tests.$testName.result,Abnormal,Positive|string|nullable";
+            $rules["tests.$testName.remarks"] = 'nullable|string';
+        }
+
+        return $rules;
+    }
 
     public function store()
     {
         $this->validate();
 
-        // Save the file if uploaded
-        if ($this->result_file) {
-            $filePath = $this->result_file->store('documents', 'public');
+        $testResults = [];
+        
+        // Build test results array based on student's major and year level
+        $isFoodRelated = $this->selectedUser->student_information->major->food_related;
+        $isFirstYear = $this->selectedUser->student_information->year_level == 1;
+
+        // Always include these tests
+        $testResults['XRay'] = $this->tests['xray'];
+        $testResults['Drug Test'] = $this->tests['drugtest'];
+
+        // Include additional tests based on conditions
+        if ($isFoodRelated) {
+            $testResults['Hepatitis A'] = $this->tests['hepatitis_a'];
+            $testResults['Hepatitis B'] = $this->tests['hepatitis_b'];
+            $testResults['Fecalysis'] = $this->tests['fecalysis'];
+            
+            if ($isFirstYear) {
+                $testResults['CBC'] = $this->tests['cbc'];
+                $testResults['Blood Typing'] = $this->tests['blood_typing'];
+                $testResults['Urinalysis'] = $this->tests['urinalysis'];
+            }
+        } else {
+            if ($isFirstYear) {
+                $testResults['CBC'] = $this->tests['cbc'];
+                $testResults['Blood Typing'] = $this->tests['blood_typing'];
+                $testResults['Urinalysis'] = $this->tests['urinalysis'];
+            }
         }
 
-        // Example of storing data (adjust to your database structure)
-        $medical_result = $this->selectedUser->student_information->medical_results()->create([
-            'hematology_result' => $this->hematology_result,
-            'hematology_abnormality' => $this->hematology_abnormality,
-            'hematology_remarks' => $this->hematology_remarks,
-            'urinalysis_result' => $this->urinalysis_result,
-            'urinalysis_abnormality' => $this->urinalysis_abnormality,
-            'urinalysis_remarks' => $this->urinalysis_remarks,
-            'xray_result' => $this->xray_result,
-            'xray_abnormality' => $this->xray_abnormality,
-            'xray_remarks' => $this->xray_remarks,
-            'ishihara_result' => $this->ishihara_result,
-            'ishihara_abnormality' => $this->ishihara_abnormality,
-            'ishihara_remarks' => $this->ishihara_remarks,
-            'drugtest_result' => $this->drugtest_result,
-            'drugtest_abnormality' => $this->drugtest_abnormality,
-            'drugtest_remarks' => $this->drugtest_remarks,
+        // Include Ishihara test if needed (add your condition)
+        $testResults['Ishihara'] = $this->tests['ishihara'];
+
+        // Filter out empty tests
+        $testResults = array_filter($testResults, function ($test) {
+            return !empty(array_filter($test));
+        });
+
+        // Save the medical results
+        $medical_result = $this->selectedUser->medical_results()->update([
+            'test_results' => json_encode($testResults),
             'condition' => $this->condition,
             'additional_comments' => $this->additional_comments,
-            'result_file_path' => $filePath ?? null,
             'semester' => now()->month <= 6 ? '2nd sem' : '1st sem',
             'school_year' => now()->month <= 6 ? (now()->year - 1) . '-' . now()->year : now()->year . '-' . (now()->year + 1),
             'upload_date' => now(),
-            'reviewed_by' => 1,
-            'uploaded_by' => 1
+            'reviewed_by' => auth()->user()->id,
+            'uploaded_by' => auth()->user()->id
         ]);
 
         session()->flash('success', 'Medical results saved successfully!');
-        $this->js("alert('Done setting up!')");
-        return $this->generateCertificate($medical_result->id);
-        return redirect('/student-list')->with(true);
+        
+        // Uncomment these if needed
+        // $this->sendSms($this->formatPhoneNumber($this->selectedUser->student_information->user->profile->contact_number), $medical_result);
+        $this->generateCertificate($medical_result->id);
+        
+        return redirect('/appointment-list')->with(true);
     }
 
     public function mount()
     {
-        // Check if selectedUser exists in the session
-        $this->selectedUser = session('selectedUser');
+        $this->selectedUser = $this->selectedUser->student_information->user;
 
-        // If no user is selected, redirect back to the user list page
         if (!$this->selectedUser) {
             return redirect()->route('student-list')->with('error', 'No student selected.');
         }
@@ -124,24 +129,68 @@ class NewMedicalResult extends Component
         // Save the QR code as an image or generate a data URL
         $qrCodeUrl = base64_encode($qrCodeBinary->getString());
 
-        $pdf = PDF::loadView('pdf.medical-certificate', [
-            'studentName' => $medicalResult->student_information->user->name,
-            'yearLevel' => $medicalResult->student_information->year_level,
-            'course' => $medicalResult->student_information->program->name,
+        $payload = [
+            'studentName' => $medicalResult->appointment->student_information->user->name,
+            'yearLevel' => $medicalResult->appointment->student_information->year_level,
+            'course' => $medicalResult->appointment->student_information->program->name,
             'dateReleased' => $medicalResult->appointment->appointment_date,
             'qrCodeUrl' => $qrCodeUrl,
+            'document' => 'medical-certificate',
+            'width' => 8.5,
+            'height' => 13,
+        ];
+        $encrypted = Crypt::encrypt($payload);
+
+        $this->dispatch('open-preview-tab', [
+            'url' => '/document/preview?token=' . urlencode($encrypted),
         ]);
-    
-        return response()->streamDownload(function () use ($pdf) {
-            echo $pdf->stream();
-        }, 'medical-certificate.pdf');
 
         // // Option 2: Download the PDF directly
         // // return $pdf->download('medical-certificate.pdf');
     }
 
+    function formatPhoneNumber($phoneNumber)
+    {
+        if (substr($phoneNumber, 0, 2) === '09' && strlen($phoneNumber) === 11) {
+            return '+63' . substr($phoneNumber, 1);
+        }
+
+        return $phoneNumber;
+    }
+
+    private function sendSms($contactNumber, $medical_result)
+    {
+        $sid = getenv('TWILIO_ACCOUNT_SID');
+        $authToken = getenv('TWILIO_AUTH_TOKEN');
+        $from = getenv('TWILIO_FROM_NUMBER');;
+        $to = $contactNumber;
+    
+        $url = 'https://api.twilio.com/2010-04-01/Accounts/' . $sid . '/Messages.json';
+    
+        $data = [
+            'To' => $to,
+            'From' => $from,
+            'Body' => 'This is to inform you that your results have been posted. You may check the portal to view your results',
+        ];
+    
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_USERPWD, $sid . ':' . $authToken);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+        
+        $response = curl_exec($ch);
+        curl_close($ch);
+        
+        if ($response === false) {
+            $this->js('Twilio SMS Error: ' . curl_error($ch));
+        }
+        $this->generateCertificate($medical_result->id);
+    }
+
     public function render()
     {
-        return view('livewire.student-list.new-medical-result');
+        return view('livewire.appointment-list.result');
     }
 }

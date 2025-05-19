@@ -51,7 +51,7 @@ class NewMedicalStaff extends Component
         $user = User::create([
             'email' => $this->email,
             'username' => $this->username,
-            'password' => bcrypt('secret'),
+            'password' => bcrypt('password'),
             'role' => 'medical staff',
             'name' => trim($this->last_name . ', ' . $this->first_name . ' ' . ($this->middle_name ? $this->middle_name . ' ' : '') . ($this->extension_name ? $this->extension_name : '')),
         ]);

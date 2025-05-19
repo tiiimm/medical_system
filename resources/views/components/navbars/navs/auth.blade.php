@@ -35,17 +35,26 @@
             <form method="POST" action="" class="d-none" id="logout-form">
                 @csrf
             </form>
-            <ul class="navbar-nav justify-content-end">
+            {{-- <ul class="navbar-nav justify-content-end">
                 <li class="nav-item d-flex align-items-center">
                     <a href="{{ route('user-profile') }}" class="nav-link text-body font-weight-bold px-0">
                         <i class="fa fa-user me-sm-4"></i>
                     </a>
                 </li>
-            </ul>
+            </ul> --}}
             <ul class="navbar-nav  justify-content-end">
                 <li class="nav-item d-flex align-items-center">
                     <a href="javascript:;" class="nav-link text-body font-weight-bold px-0">
                         <livewire:auth.logout/>
+                    </a>
+                </li>
+                <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
+                    <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
+                        <div class="sidenav-toggler-inner">
+                            <i class="sidenav-toggler-line"></i>
+                            <i class="sidenav-toggler-line"></i>
+                            <i class="sidenav-toggler-line"></i>
+                        </div>
                     </a>
                 </li>
             </ul>

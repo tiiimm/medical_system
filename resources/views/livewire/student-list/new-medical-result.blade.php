@@ -16,7 +16,8 @@
                                 <span class="font-weight-bolder">Student Name:</span> {{$selectedUser->name}} <br>
                                 <span class="font-weight-bolder">Birthdate:</span> {{$selectedUser->profile->medical_profile->birthdate}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                 @php use Carbon\Carbon; @endphp
-                                <span class="font-weight-bolder">Age:</span> {{Carbon::parse($selectedUser->profile->medical_profile->birthdate)->age}}
+                                <span class="font-weight-bolder">Age:</span> {{Carbon::parse($selectedUser->profile->medical_profile->birthdate)->age}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <span class="font-weight-bolder">Sex:</span> {{$selectedUser->profile->medical_profile->sex}}
                             </p>
                         </div>
                         <div class="col-6">
@@ -29,105 +30,103 @@
                     </div>
 
                     <!-- Medical Results Form -->
-                    <form wire:submit="store"> 
+                    <form wire:submit="store">
                         @php
-                            $tests = [
-                                'Hematology' => [
-                                    'model' => 'hematology',
-                                    'abnormalities' => [
-                                        'Anemia',              
-                                        'Leukocytosis',        
-                                        'Leukopenia',          
-                                        'Thrombocytopenia'     
-                                    ]
-                                ],
-                                'Urinalysis' => [
-                                    'model' => 'urinalysis',
-                                    'abnormalities' => [
-                                        'UTI',                 
-                                        'Dehydration',         
-                                        'Kidney Disease',      
-                                        'Diabetes',            
-                                        'Bladder Infection',   
-                                        'Proteinuria'          
-                                    ]
-                                ],
-                                'XRay' => [
-                                    'model' => 'xray',
-                                    'abnormalities' => [
-                                        'Tuberculosis',        
-                                        'Pneumonia',           
-                                        'Broken Bones',        
-                                        'Lung Scarring',       
-                                        'COPD'                 
-                                    ]
-                                ],
-                                'Ishihara Test' => [
-                                    'model' => 'ishihara',
-                                    'abnormalities' => [
-                                        'Mild CVD',            
-                                        'Moderate CVD',        
-                                        'Severe CVD',          
-                                        'No Color Vision'      
-                                    ]
-                                ],
-                                'Drug Test' => [
-                                    'model' => 'drugtest',
-                                    'abnormalities' => [
-                                        'Substance Abuse',     
-                                        'Prescription Drug Abuse', 
-                                        'Illegal Drug Use'     
-                                    ]
-                                ]
-
+                            // Define test display names and their corresponding keys
+                            $testDisplayMap = [
+                                'hepatitis_a' => 'Hepatitis A',
+                                'hepatitis_b' => 'Hepatitis B',
+                                'fecalysis' => 'Fecalysis',
+                                'xray' => 'Chest XRay',
+                                'cbc' => 'CBC',
+                                'blood_typing' => 'Blood Typing',
+                                'ishihara' => 'Ishihara',
+                                'urinalysis' => 'Urinalysis',
+                                'drugtest' => 'Drug Test'
                             ];
+                            
+                            // Define abnormalities for each test
+                            $testAbnormalities = [
+                                'hepatitis_a' => ['Hepatitis A Positive'],
+                                'hepatitis_b' => ['Hepatitis B Positive'],
+                                'fecalysis' => ['Intestinal Parasites', 'Bacterial Infection', 'Occult Blood'],
+                                'xray' => ['Tuberculosis', 'Pneumonia', 'Broken Bones', 'Lung Scarring', 'COPD'],
+                                'cbc' => ['Anemia', 'Infection', 'Leukemia', 'Vitamin Deficiencies'],
+                                'blood_typing' => ['Rare Blood Type'],
+                                'ishihara' => ['Color Blindness'],
+                                'urinalysis' => ['UTI', 'Kidney Disease', 'Diabetes'],
+                                'drugtest' => ['Substance Abuse', 'Prescription Drug Abuse', 'Illegal Drug Use']
+                            ];
+                            
+                            // Determine which tests to show based on major and year level
+                            $isFoodRelated = $selectedUser->student_information->major->food_related;
+                            $isFirstYear = $selectedUser->student_information->year_level == "1st year";
+                            
+                            $availableTests = ['xray', 'drugtest'];
+                            
+                            if ($isFoodRelated) {
+                                array_push($availableTests, 'hepatitis_b', 'fecalysis');
+                                if ($isFirstYear) {
+                                    array_push($availableTests, 'cbc', 'blood_typing', 'urinalysis');
+                                }
+                            } else {
+                                if ($isFirstYear) {
+                                    array_push($availableTests, 'cbc', 'blood_typing', 'urinalysis');
+                                }
+                            }
                         @endphp
 
-                        @foreach ($tests as $test => $data)
+                        @foreach ($availableTests as $testKey)
+                            @php
+                                $testName = $testDisplayMap[$testKey] ?? ucfirst(str_replace('_', ' ', $testKey));
+                                $isBinaryResult = in_array($testKey, ['hepatitis_a', 'hepatitis_b', 'drugtest']);
+                            @endphp
+                            
                             <div class="row mt-2">
                                 <div class="col-2">
-                                    {{ $test }}
+                                    {{ $testName }}
                                 </div>
                                 <div class="col-2">
-                                    <select wire:model.lazy="{{ $data['model'] }}_result" class="form-select border border-1 p-2 ps-2">
+                                    <select wire:model.lazy="tests.{{ $testKey }}.result" class="form-select border border-1 p-2 ps-2">
                                         <option value="">Select Result</option>
-                                        @if ($test != 'Drug Test')
-                                        <option value="Normal">Normal</option>
-                                        <option value="Abnormal">Abnormal</option>
+                                        @if ($isBinaryResult)
+                                            <option value="Positive">Positive</option>
+                                            <option value="Negative">Negative</option>
                                         @else
-                                        <option value="Positive">Positive</option>
-                                        <option value="Negative">Negative</option>
+                                            <option value="Normal">Normal</option>
+                                            <option value="Abnormal">Abnormal</option>
                                         @endif
                                     </select>
-                                    @error($data['model'] . '_result')
+                                    @error("tests.{$testKey}.result")
                                         <p class="text-danger text-sm mt-1">{{ $message }}</p>
                                     @enderror
                                 </div>
-                                @if (${$data['model'] . '_result'} == 'Abnormal' || ${$data['model'] . '_result'} == 'Positive')
+                                
+                                @if (in_array($tests[$testKey]['result'] ?? '', ['Abnormal', 'Positive']))
                                     <div class="col-3">
-                                        <select wire:model.blur="{{ $data['model'] . '_abnormality' }}" class="form-select border border-1 p-2 ps-2">
+                                        <select wire:model.blur="tests.{{ $testKey }}.abnormality" class="form-select border border-1 p-2 ps-2">
                                             <option value="">Select Abnormality</option>
-                                            @foreach ($data['abnormalities'] as $abnormality)
+                                            @foreach ($testAbnormalities[$testKey] as $abnormality)
                                                 <option value="{{ $abnormality }}">{{ $abnormality }}</option>
                                             @endforeach
                                         </select>
-                                        @error($data['model'] . '_abnormality')
+                                        @error("tests.{$testKey}.abnormality")
                                             <p class="text-danger text-sm mt-1">{{ $message }}</p>
                                         @enderror
                                     </div>
                                 @endif
+                                
                                 <div class="col-5">
-                                    <div class="input-group input-group-outline @if(!empty(${'remarks_' . $data['model']})) is-filled @endif">
+                                    <div class="input-group input-group-outline @if(!empty($tests[$testKey]['remarks'])) is-filled @endif">
                                         <label class="form-label">Remarks</label>
-                                        <input wire:model.live="remarks_{{ $data['model'] }}" type="text" class="form-control">
+                                        <input wire:model.live="tests.{{ $testKey }}.remarks" type="text" class="form-control">
                                     </div>
-                                    @error('remarks_' . $data['model'])
+                                    @error("tests.{$testKey}.remarks")
                                         <p class="text-danger">{{ $message }}</p>
                                     @enderror
                                 </div>
                             </div>
                         @endforeach
-
 
                         <!-- Additional Comments Section -->
                         <div class="row mt-4">
@@ -147,24 +146,6 @@
                                     <p class="text-danger">{{ $message }}</p>
                                 @enderror
                             </div>
-                        </div>
-
-                        <!-- File Upload Section -->
-                        <div class="row mt-4 px-6">
-                            <div class="custom-file-upload">
-                                <input wire:model="result_file" type="file" class="form-control d-none" id="result_file" accept=".pdf,.jpg,.jpeg,.png">
-                                <label for="result_file" class="upload-label">Choose Files</label>
-                                <span class="file-name mt-1">
-                                    @if($result_file)
-                                        {{ $result_file->getClientOriginalName() }}
-                                    @else
-                                        No file selected
-                                    @endif
-                                </span>
-                            </div>
-                            @error('result_file')
-                                <p class="text-danger">{{ $message }}</p>
-                            @enderror
                         </div>
 
                         <!-- Submit Button -->

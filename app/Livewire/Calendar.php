@@ -14,6 +14,7 @@ class Calendar extends Component
     public $calendar = [];
     public $eventSchedule = '';
     public $eventDate = '';
+    public $eventSlots = '';
     public $semester;
     public $school_year;
     public $slots;
@@ -113,7 +114,8 @@ class Calendar extends Component
 
             if ($remainingSlots > 0) {
                 $events[] = [
-                    'title' => ucfirst($schedule) . " - {$remainingSlots} slots left",
+                    'title' => ucfirst($schedule) . "-{$remainingSlots} slots left",
+                    'remaining_slots' => $remainingSlots,
                     'type' => 'primary',
                     'schedule' => strtoupper($schedule),
                     'date' => $specificDate->toDateString(),
@@ -124,7 +126,7 @@ class Calendar extends Component
         return $events;
     }
 
-    public function triggerModal($eventSchedule, $eventDate)
+    public function triggerModal($eventSchedule, $eventDate, $eventSlots)
     {
         $user = auth()->user();
 
@@ -141,6 +143,7 @@ class Calendar extends Component
 
         $this->eventSchedule = $eventSchedule;
         $this->eventDate = $eventDate;
+        $this->eventSlots = $eventSlots;
 
         $this->dispatch('showModal');
     }

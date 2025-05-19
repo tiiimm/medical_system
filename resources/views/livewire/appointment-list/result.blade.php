@@ -3,8 +3,15 @@
         <div class="col-12">
             <div class="card my-4">
                 <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
-                    <div class="bg-gradient-primary border-radius-lg pt-4 pb-3">
-                        <h4 class="text-white mx-3"><strong>New Medical Result</strong></h4>
+                    <div class="bg-gradient-primary border-radius-lg pt-4 pb-3 d-flex justify-content-between align-items-center px-3">
+                        <h4 class="text-white m-0"><strong>New Medical Result</strong></h4>
+                        @if ($selectedAppointment->medical_results && $selectedAppointment->medical_results->result_file_path)
+                            <a href="{{ url('/medical-results/view/' . $selectedAppointment->medical_results->id) }}" 
+                            class="btn btn-secondary btn-sm" 
+                            target="_blank">
+                            <i class="material-icons">visibility</i> View All Result Files
+                            </a>
+                        @endif
                     </div>
                 </div>  
                 <div class="container-fluid mx-2">           
@@ -30,100 +37,58 @@
                     </div>
 
                     <!-- Medical Results Form -->
-                    <form wire:submit="store"> 
-                        @php
-                            $tests = [
-                                'XRay' => [
-                                    'model' => 'xray',
-                                    'abnormalities' => [
-                                        'Tuberculosis',
-                                        'Pneumonia',
-                                        'Broken Bones',
-                                        'Lung Scarring',
-                                        'COPD'
-                                    ]
-                                ],
-                                'Drug Test' => [
-                                    'model' => 'drugtest',
-                                    'abnormalities' => [
-                                        'Substance Abuse',
-                                        'Prescription Drug Abuse',
-                                        'Illegal Drug Use'
-                                    ]
-                                ]
-                            ];
-
-                            // Conditionally add tests for food-related majors
-                            if ($selectedUser->student_information->major->food_related) {
-                                $tests['Stool Exam'] = [
-                                    'model' => 'stool_exam',
-                                    'abnormalities' => [
-                                        'Parasitic Infection',
-                                        'Blood in Stool',
-                                        'Bacterial Infection',
-                                        'Malabsorption Disorder',
-                                        'Colon Cancer Indications'
-                                    ]
-                                ];
-                                
-                                $tests['Hepatitis A'] = [
-                                    'model' => 'hepatitis_a',
-                                    'abnormalities' => [
-                                        'Liver Inflammation',
-                                        'Jaundice',
-                                        'Fatigue',
-                                        'Loss of Appetite',
-                                        'Abdominal Pain'
-                                    ]
-                                ];
-                            }
-                        @endphp
-
-                        @foreach ($tests as $test => $data)
+                    <form wire:submit="store">
+                        @foreach ($availableTests as $testKey)
+                            @php
+                                $testName = $testDisplayMap[$testKey] ?? ucfirst(str_replace('_', ' ', $testKey));
+                                $isBinaryResult = in_array($testKey, ['hepatitis_a', 'hepatitis_b', 'drugtest']);
+                            @endphp
+                            
                             <div class="row mt-2">
                                 <div class="col-2">
-                                    {{ $test }}
+                                    {{ $testName }}
                                 </div>
                                 <div class="col-2">
-                                    <select wire:model.lazy="{{ $data['model'] }}_result" class="form-select border border-1 p-2 ps-2">
+                                    <select wire:model.lazy="tests.{{ $testKey }}.result" class="form-select border border-1 p-2 ps-2">
                                         <option value="">Select Result</option>
-                                        @if ($test != 'Drug Test' && $test != 'Hepatitis A')
-                                        <option value="Normal">Normal</option>
-                                        <option value="Abnormal">Abnormal</option>
+                                        @if ($isBinaryResult)
+                                            <option value="Positive">Positive</option>
+                                            <option value="Negative">Negative</option>
                                         @else
-                                        <option value="Positive">Positive</option>
-                                        <option value="Negative">Negative</option>
+                                            <option value="Normal">Normal</option>
+                                            <option value="Abnormal">Abnormal</option>
                                         @endif
                                     </select>
-                                    @error($data['model'] . '_result')
+                                    @error("tests.{$testKey}.result")
                                         <p class="text-danger text-sm mt-1">{{ $message }}</p>
                                     @enderror
                                 </div>
-                                @if (${$data['model'] . '_result'} == 'Abnormal' || ${$data['model'] . '_result'} == 'Positive')
+                                
+                                @if (in_array($tests[$testKey]['result'] ?? '', ['Abnormal', 'Positive']))
                                     <div class="col-3">
-                                        <select wire:model.blur="{{ $data['model'] . '_abnormality' }}" class="form-select border border-1 p-2 ps-2">
+                                        <select wire:model.blur="tests.{{ $testKey }}.abnormality" class="form-select border border-1 p-2 ps-2">
                                             <option value="">Select Abnormality</option>
-                                            @foreach ($data['abnormalities'] as $abnormality)
+                                            @foreach ($testAbnormalities[$testKey] as $abnormality)
                                                 <option value="{{ $abnormality }}">{{ $abnormality }}</option>
                                             @endforeach
                                         </select>
-                                        @error($data['model'] . '_abnormality')
+                                        @error("tests.{$testKey}.abnormality")
                                             <p class="text-danger text-sm mt-1">{{ $message }}</p>
                                         @enderror
                                     </div>
                                 @endif
+                                
                                 <div class="col-5">
-                                    <div class="input-group input-group-outline @if(!empty(${$data['model'] . '_remarks'})) is-filled @endif">
+                                    <div class="input-group input-group-outline @if(!empty($tests[$testKey]['remarks'])) is-filled @endif">
                                         <label class="form-label">Remarks</label>
-                                        <input wire:model.live="{{ $data['model'] . '_remarks' }}" type="text" class="form-control">
+                                        <input wire:model.live="tests.{{ $testKey }}.remarks" type="text" class="form-control">
                                     </div>
-                                    @error($data['model'] . '_remarks')
+                                    @error("tests.{$testKey}.remarks")
                                         <p class="text-danger">{{ $message }}</p>
                                     @enderror
                                 </div>
                             </div>
                         @endforeach
-
 
                         <!-- Additional Comments Section -->
                         <div class="row mt-4">

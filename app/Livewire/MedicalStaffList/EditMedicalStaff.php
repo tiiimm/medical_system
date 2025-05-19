@@ -47,6 +47,9 @@ class EditMedicalStaff extends Component
     {
         $this->campuses = Campus::all();
         $this->selectedUser = session('selectedUser');
+        if (session('selectedUser')) {
+            session()->keep(['selectedUser']);
+        }
 
         if (!$this->selectedUser) {
             return redirect()->route('student-list')->with('error', 'No student selected.');

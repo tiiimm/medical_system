@@ -125,12 +125,12 @@
                 @endif
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    @if ($selectedMedicalRecord != null)
-                    <a href="{{ asset('storage/' . $selectedMedicalRecord->result_file_path) }}" 
+                    @if ($selectedMedicalRecord && $selectedMedicalRecord->result_file_path)
+                        <a href="{{ url('/medical-results/view/' . $selectedMedicalRecord->id) }}" 
                         class="btn btn-info" 
                         target="_blank">
-                        <i class="material-icons">visibility</i> View Result File
-                    </a>
+                        <i class="material-icons">visibility</i> View All Result Files
+                        </a>
                     @endif
                 </div>
             </div>

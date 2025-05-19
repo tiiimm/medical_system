@@ -84,7 +84,7 @@
             </div>
         </div>
     </div>
-    @if($first_access)
+    {{-- @if($first_access)
     <div class="modal fade" id="autoOpenModal" tabindex="-1" aria-labelledby="autoOpenModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -105,7 +105,7 @@
             </div>
         </div>
     </div>
-    @endif
+    @endif --}}
 </div>
 
 @push('js')

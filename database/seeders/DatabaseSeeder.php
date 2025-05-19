@@ -16,19 +16,19 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call(CampusSeeder::class);
-        $this->call(CollegeSeeder::class);
-        $this->call(ProgramSeeder::class);
-        $this->call(UserSeeder::class);
-        Appointment::factory(10)->create();
-
-
         User::factory(1)->create([
             'name' => 'administrator',
             'email' => 'administrator@medical.com',
             'role' => 'administrator',
-            'password' => 'secret',
+            'password' => 'password',
         ]);
+
+        $this->call(CampusSeeder::class);
+        $this->call(CollegeSeeder::class);
+        $this->call(ProgramSeeder::class);
+        $this->call(UserSeeder::class);
+        // Appointment::factory(10)->create(); //allow if testing
+
         SystemSetting::create([
             'semester' => '2nd Semester',
             'school_year' => '2024-2025',

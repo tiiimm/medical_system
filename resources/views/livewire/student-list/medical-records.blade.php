@@ -8,9 +8,9 @@
                     </div>
                 </div>
                 <div class="me-3 my-3 text-end">
-                    @if(auth()->user()->hasRole('medical staff'))
+                    {{-- @if(auth()->user()->hasRole('medical staff'))
                     <a class="btn bg-gradient-dark mb-0" wire:click="addNewRecord"><i class="material-icons text-sm">add</i>&nbsp;&nbsp;Add New Record</a>
-                    @endif
+                    @endif --}}
                     @if(auth()->user()->hasRole('medical staff'))
                         <a class="btn bg-gradient-success mb-0" wire:click="printHealthRecord">
                             <i class="material-icons text-sm">print</i>&nbsp;&nbsp;Print Health Record Form
@@ -117,12 +117,12 @@
                 @endif
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    @if ($selectedMedicalRecord != null)
-                    <a href="{{ asset('storage/' . $selectedMedicalRecord->result_file_path) }}" 
+                    @if ($selectedMedicalRecord && $selectedMedicalRecord->result_file_path)
+                        <a href="{{ url('/medical-results/view/' . $selectedMedicalRecord->id) }}" 
                         class="btn btn-info" 
                         target="_blank">
-                        <i class="material-icons">visibility</i> View Result File
-                    </a>
+                        <i class="material-icons">visibility</i> View All Result Files
+                        </a>
                     @endif
                 </div>
             </div>

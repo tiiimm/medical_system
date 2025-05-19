@@ -13,30 +13,33 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        for ($i = 1; $i <= 3; $i++) {
+        //3 if testing
+        for ($i = 1; $i <= 1; $i++) {
             User::factory()->create([
                 'email' => "medical{$i}@medical.com",
                 'role' => 'medical staff',
-                'password' => bcrypt('secret'),
+                'password' => bcrypt('password'),
             ]);
         }
-        for ($i = 1; $i <= 3; $i++) {
+        //3 if testing
+        for ($i = 1; $i <= 1; $i++) {
             User::factory()->create([
                 'email' => "drrmo{$i}@medical.com",
                 'role' => 'drrmo staff',
-                'password' => bcrypt('secret'),
+                'password' => bcrypt('password'),
             ]);
         }
-        for ($i = 1; $i <= 5; $i++) {
-            User::factory()->create([
-                'email' => "student{$i}@medical.com",
-                'role' => 'student',
-                'password' => bcrypt('secret'),
-            ]);
-        }
-        User::factory(15)->create([
-            'role' => 'student',
-            'password' => bcrypt('secret'),
-        ]);
+        //allow if testing
+        // for ($i = 1; $i <= 5; $i++) {
+        //     User::factory()->create([
+        //         'email' => "student{$i}@medical.com",
+        //         'role' => 'student',
+        //         'password' => bcrypt('password'),
+        //     ]);
+        // }
+        // User::factory(15)->create([
+        //     'role' => 'student',
+        //     'password' => bcrypt('password'),
+        // ]);
     }
 }

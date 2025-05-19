@@ -432,7 +432,7 @@
                                                     @empty
                                                     <tr>
                                                         <td colspan="12" class="text-center">
-                                                            <p class="text-sm text-muted my-2">No allergies listed</p>
+                                                            <p class="text-sm text-muted my-2">No medical history listed</p>
                                                         </td>
                                                     </tr>
                                                     @endforelse

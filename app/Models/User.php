@@ -49,6 +49,10 @@ class User extends Authenticatable
         ];
     }
 
+    public function hasProfile() {
+        return $this->name != null;
+    }
+
     public function hasRole($role)
     {
         return $this->role === $role;
