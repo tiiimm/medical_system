@@ -46,13 +46,13 @@ class AppointmentStudentResult extends Component
 
         // Example: store only the first file path, or handle multiple records if needed
         $medical_result = $this->selectedAppointment->medical_results()->create([
+            'user_id' => auth()->id(),
             'result_file_path' => $paths,
             'semester' => now()->month <= 6 ? '2nd sem' : '1st sem',
             'school_year' => now()->month <= 6
                 ? (now()->year - 1) . '-' . now()->year
                 : now()->year . '-' . (now()->year + 1),
             'upload_date' => now(),
-            'reviewed_by' => auth()->user()->id,
             'uploaded_by' => auth()->user()->id
         ]);
 

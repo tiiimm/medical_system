@@ -30,13 +30,13 @@ class UserSeeder extends Seeder
             ]);
         }
         //allow if testing
-        // for ($i = 1; $i <= 5; $i++) {
-        //     User::factory()->create([
-        //         'email' => "student{$i}@medical.com",
-        //         'role' => 'student',
-        //         'password' => bcrypt('password'),
-        //     ]);
-        // }
+        for ($i = 1; $i <= 2; $i++) {
+            User::factory()->create([
+                'email' => "student{$i}@medical.com",
+                'role' => 'student',
+                'password' => bcrypt('password'),
+            ]);
+        }
         // User::factory(15)->create([
         //     'role' => 'student',
         //     'password' => bcrypt('password'),

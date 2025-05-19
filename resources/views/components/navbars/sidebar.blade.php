@@ -5,7 +5,7 @@
         <i class="fas fa-times p-3 cursor-pointer text-white opacity-5 position-absolute end-0 top-0 d-none d-xl-none"
             aria-hidden="true" id="iconSidenav"></i>
             <a class="navbar-brand m-0 d-flex text-wrap align-items-center" href=" {{ route('dashboard') }} ">
-                <img src="{{ asset('assets') }}/img/zppsu-logo.png" class="navbar-brand-img h-100" alt="main_logo">
+                <img src="assets/img/zppsu-logo.png" class="navbar-brand-img h-100" alt="main_logo">
                 <span class="ms-2 font-weight-bold text-white">ZPPSU MedEx</span>
             </a>
     </div>
@@ -148,33 +148,36 @@
                 </a>
             </li>
             @elseif(auth()->user()->hasRole('student'))
-            <li class="nav-item">
-                <a class="nav-link text-white {{ Route::currentRouteName() == 'book-appointment' ? ' active bg-gradient-primary' : '' }} "
-                    href="{{ route('book-appointment') }}">
-                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="material-icons opacity-10">calendar_month</i>
-                    </div>
-                    <span class="nav-link-text ms-1">Book Appointment</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-white {{ str_starts_with(Route::currentRouteName(), 'appointment-list') ? ' active bg-gradient-primary' : '' }} "
-                    href="{{ route('appointment-list') }}">
-                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="material-icons opacity-10">checklist</i>
-                    </div>
-                    <span class="nav-link-text ms-1">Appointment List</span>
-                </a>
-            </li>
-            {{-- <li class="nav-item">
-                <a class="nav-link text-white {{ str_starts_with(Route::currentRouteName(), 'medical-process') ? ' active bg-gradient-primary' : '' }} "
-                    href="{{ route('medical-process') }}">
-                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="material-icons opacity-10">checklist</i>
-                    </div>
-                    <span class="nav-link-text ms-1">Medical Process</span>
-                </a>
-            </li> --}}
+                @if(auth()->user()->allow_booking)
+                    <li class="nav-item">
+                        <a class="nav-link text-white {{ Route::currentRouteName() == 'book-appointment' ? ' active bg-gradient-primary' : '' }} "
+                            href="{{ route('book-appointment') }}">
+                            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                                <i class="material-icons opacity-10">calendar_month</i>
+                            </div>
+                            <span class="nav-link-text ms-1">Book Appointment</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white {{ str_starts_with(Route::currentRouteName(), 'appointment-list') ? ' active bg-gradient-primary' : '' }} "
+                            href="{{ route('appointment-list') }}">
+                            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                                <i class="material-icons opacity-10">checklist</i>
+                            </div>
+                            <span class="nav-link-text ms-1">Appointment List</span>
+                        </a>
+                    </li>
+                @else
+                    <li class="nav-item">
+                        <a class="nav-link text-white {{ str_starts_with(Route::currentRouteName(), 'medical-process') ? ' active bg-gradient-primary' : '' }} "
+                            href="{{ route('medical-process') }}">
+                            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                                <i class="material-icons opacity-10">checklist</i>
+                            </div>
+                            <span class="nav-link-text ms-1">Medical Process</span>
+                        </a>
+                    </li>
+                @endif
             <li class="nav-item">
                 <a class="nav-link text-white {{ Route::currentRouteName() == 'medical-records' ? ' active bg-gradient-primary' : '' }} "
                     href="{{ route('medical-records') }}">

@@ -49,6 +49,12 @@ class User extends Authenticatable
         ];
     }
 
+    public function getAllowBookingAttribute()
+    {
+        $setting = \App\Models\SystemSetting::first();
+        return $setting ? $setting->allow_booking : false;
+    }
+
     public function hasProfile() {
         return $this->name != null;
     }
@@ -61,6 +67,10 @@ class User extends Authenticatable
     public function appointments()
     {
         return $this->hasMany(Appointment::class);
+    }
+    
+    public function medical_results() {
+        return $this->hasMany(MedicalResults::class, 'user_id');
     }
 
     public function profile()

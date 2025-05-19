@@ -60,15 +60,21 @@
                                         <p class="text-xs text-secondary mb-0">{{ $medical_result->xray_result }}</p>
                                     </td>
                                     <td class="align-middle">
+                                        @if(auth()->user()->hasRole('student') && $medical_result->reviewed_by != null)
                                         <a wire:click="downloadFile('{{ $medical_result['id'] }}')" class="btn btn-success btn-link"
                                             data-original-title="Download Result" title="Download Result">
                                             <i class="material-icons">download</i>
                                         </a>
-                                        @if(auth()->user()->hasRole('medical staff'))
+                                        @elseif(auth()->user()->hasRole('medical staff') && $medical_result->reviewed_by != null)
                                         <a wire:click="generateCertificate('{{ $medical_result['id'] }}')" class="btn btn-warning btn-link"
                                            data-original-title="Update Status" title="Update Status">
                                             <i class="material-icons">print</i>
                                             <!-- <i class="material-icons">east</i> -->
+                                        </a>
+                                        @elseif(auth()->user()->hasRole('medical staff') && $medical_result->reviewed_by == null)
+                                        <a wire:click="showDetails('{{ $appointment['id'] }}')" class="btn btn-secondary btn-link"
+                                           data-original-title="Update Status" title="Update Status">
+                                            <i class="material-icons">east</i>
                                         </a>
                                         @endif
                                         <a wire:click="showDetails('{{ $medical_result['id'] }}')" class="btn btn-secondary btn-link"

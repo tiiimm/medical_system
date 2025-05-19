@@ -176,7 +176,7 @@
                 <p>
                     <strong><i>CHEST/LUNGS:</i></strong><br>
                     <strong>CHEST X-RAY RESULT -  </strong><br>
-                    <?php $result = json_decode($user->appointments()->latest()->first()->medical_results->test_results, true)['XRay'] ?>
+                    <?php $result = json_decode($user->medical_results()->latest()->first()->test_results, true)['XRay'] ?>
                     <label style="margin: 0 10px 0 5px;">
                         <span style="font-family: DejaVu Sans;">{{ $result['result'] === 'Normal' ? '◉' : '○' }}</span><strong>NORMAL</strong>
                     </label><br>
@@ -213,7 +213,7 @@
                 </p>
                 <p>
                     <strong><i>DRUG TEST:</i></strong><br>
-                    <?php $result = json_decode($user->appointments()->latest()->first()->medical_results->test_results, true)['Drug Test'] ?>
+                    <?php $result = json_decode($user->medical_results()->latest()->first()->test_results, true)['Drug Test'] ?>
                     <label style="margin: 0 10px 0 5px;">
                         <span style="font-family: DejaVu Sans;">{{ $result['result'] === 'Positive' ? '◉' : '○' }}</span><strong>POSITIVE: <u>{{ $result['abnormality']??'' }}</u></strong>
                     </label><br>

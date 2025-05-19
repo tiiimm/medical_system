@@ -7,38 +7,66 @@
                         <h4 class="text-white mx-3"><strong>Medical Process</strong></h4>
                     </div>
                 </div>  
-                <div class="container-fluid mx-2">           
-                    
-                    
+                <div class="container-fluid mx-2 py-4">
+                    <!-- Circular Step Indicator -->
+                    <div class="stepper-wrapper">
+                        @php
+                            $processes = ['Urine Test', 'Chest X-Ray'];
 
-                    @if($status == 'Waiting for result')
-                        <form wire:submit="store"> 
-                            <!-- File Upload Section -->
-                            <div class="row mt-4 px-6">
-                                <div class="custom-file-upload">
-                                    <input wire:model="result_file" type="file" class="form-control d-none" id="result_file" accept=".pdf,.jpg,.jpeg,.png">
-                                    <label for="result_file" class="upload-label">Choose Files</label>
-                                    <span class="file-name mt-1">
-                                        @if($result_file)
-                                            {{ $result_file->getClientOriginalName() }}
-                                        @else
-                                            No file selected
-                                        @endif
-                                    </span>
-                                </div>
-                                @error('result_file')
-                                    <p class="text-danger">{{ $message }}</p>
-                                @enderror
-                            </div>
+                            if (auth()->user()->student_information->major->food_related) {
+                                array_push($processes, 'Fecalysis');
+                                if (auth()->user()->student_information->year_level == '1st year') {
+                                    array_push($processes, 'Blood Test');
+                                }
+                            } else {
+                                if (auth()->user()->student_information->year_level == '1st year') {
+                                    array_push($processes, 'Blood Test');
+                                }
+                            }
 
-                            <!-- Submit Button -->
-                            <div class="row mt-4">
-                                <div class="col-12 text-end">
-                                    <button type="submit" class="btn btn-primary">Submit</button>
-                                </div>
+                            array_push($processes, 'Upload Results');
+                            array_push($processes, 'Wait for medical certificate');
+                        @endphp
+
+                        @foreach($processes as $index => $process)
+                            <div class="stepper-item {{ $index == count($processes)-1?'':'completed' }}">
+                                <div class="step-counter">{{ $index + 1 }}</div>
+                                <div class="step-name">{{ $process }}</div>
                             </div>
-                        </form>
-                    @endif
+                        @endforeach
+                    </div>
+
+                    <span class="text-black mx-0">Note: Don't submit results until you've completed the medical process. You may upload 1 or more files either image or PDF as long as the total size is does not exceed 2MB</span>
+                    <form wire:submit="store"> 
+                        <!-- File Upload Section -->
+                        <div class="row mt-4 px-6">
+                            <div class="custom-file-upload">
+                                <input wire:model="result_files" type="file" class="form-control d-none" id="result_files" accept=".pdf,.jpg,.jpeg,.png" multiple>
+                                <label for="result_files" class="upload-label">Choose Files</label>
+                                <span class="file-name mt-1">
+                                    @if ($result_files && count($result_files) > 0)
+                                        <ul class="list-unstyled mb-0">
+                                            @foreach ($result_files as $file)
+                                                <li>{{ $file->getClientOriginalName() }}</li>
+                                            @endforeach
+                                        </ul>
+                                    @else
+                                        No file selected
+                                    @endif
+                                </span>
+                            </div>
+                            @error('result_files')
+                                <p class="text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="row mt-4">
+                            <div class="col-12 text-end">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

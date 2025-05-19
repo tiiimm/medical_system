@@ -18,6 +18,7 @@ return new class extends Migration
             $table->date('medical_start');
             $table->date('medical_end');
             $table->integer('slots');
+            $table->boolean('allow_booking')->default(0);
             $table->timestamps();
         });
     }

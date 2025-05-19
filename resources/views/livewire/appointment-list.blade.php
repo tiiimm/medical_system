@@ -105,6 +105,11 @@
                                            data-original-title="Update Status" title="Update Status">
                                             <i class="material-icons">update</i>
                                         </a>
+                                        @elseif(auth()->user()->hasRole('medical staff') && !$appointment->medical_results->hasReviewedBy())
+                                        <a wire:click="showDetails('{{ $appointment['id'] }}')" class="btn btn-secondary btn-link"
+                                           data-original-title="Update Status" title="Update Status">
+                                            <i class="material-icons">east</i>
+                                        </a>
                                         @endif
                                         @if(auth()->check() && auth()->user()->hasRole('medical staff') && $appointment['status'] == 'Results submitted')
                                         <a wire:click="showDetails('{{ $appointment['id'] }}')" class="btn btn-secondary btn-link"

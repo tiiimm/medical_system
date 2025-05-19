@@ -15,6 +15,13 @@ class AppointmentList extends Component
     public $status;
     public $showTodayOnly = false;
     public $userRole;
+    
+    public function mount()
+    {
+        if (auth()->user()->hasRole('student') && !auth()->user()->allow_booking) {
+            return redirect()->route('dashboard')->with('error', 'Booking appointments is disabled.');
+        }
+    }
 
     public function openStatusUpdateModal($appointmentId)
     {

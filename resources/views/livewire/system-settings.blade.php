@@ -14,6 +14,16 @@
                     @endif
 
                     <form wire:submit.prevent="updateSettings">
+                        <div class="form-check mt-4 px-0">
+                            <input class="form-check-input" type="checkbox" wire:model.lazy="allow_booking" id="allow_booking">
+                            <label class="form-check-label" for="allow_booking">
+                                Booking appointments is {{ $allow_booking?'enabled':'disabled' }}
+                            </label>
+                        </div>
+                        @error('allow_booking')
+                        <p class='text-danger inputerror'>{{ $message }}</p>
+                        @enderror
+
                         <div class="row">
                             <div class="col-6">
                                 <div class="relative">

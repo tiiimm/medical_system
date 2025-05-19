@@ -63,6 +63,13 @@ class MedicalRecords extends Component
         $this->dispatch('show-modal');
     }
     
+    public function verifyResults($id)
+    {
+        $this->selectedUser = MedicalResults::find($id)->user;
+
+        return redirect('/student-list/new-medical-result')->with('selectedUser', $this->selectedUser);
+    }
+    
     public function downloadFile($id)
     {
         $medicalResult = MedicalResults::find($id);
@@ -80,7 +87,7 @@ class MedicalRecords extends Component
     public function generateCertificate($medicalResultId)
     {
         $encryptedId = Crypt::encryptString($medicalResultId);
-        $medicalResult = MedicalResults::find($medicalResultId)->first();
+        $medicalResult = MedicalResults::find($medicalResultId);
 
         $url = route('medical-status', ['encryptedId' => $encryptedId]);
 
@@ -93,10 +100,10 @@ class MedicalRecords extends Component
         $qrCodeUrl = base64_encode($qrCodeBinary->getString());
 
         $payload = [
-            'studentName' => $medicalResult->appointment->student_information->user->name,
-            'yearLevel' => $medicalResult->appointment->student_information->year_level,
-            'course' => $medicalResult->appointment->student_information->program->name,
-            'dateReleased' => $medicalResult->appointment->appointment_date,
+            'studentName' => $medicalResult->user->student_information->user->name,
+            'yearLevel' => $medicalResult->user->student_information->year_level,
+            'course' => $medicalResult->user->student_information->program->name,
+            'dateReleased' => $medicalResult->appointment->appointment_date??now(),
             'qrCodeUrl' => $qrCodeUrl,
             'document' => 'medical-certificate',
             'width' => 8.5,
@@ -112,7 +119,11 @@ class MedicalRecords extends Component
 
     public function render()
     {
-        $medical_results = $this->selectedUser->student_information->medical_results;
+        $medical_results = MedicalResults::where(function($query) {
+            $query->where('user_id', $this->selectedUser->id);
+        })
+        ->orderBy('upload_date', 'desc')
+        ->get();
 
         return view('livewire.student-list.medical-records', ['medical_results' => $medical_results]);
     }

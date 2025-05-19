@@ -3,8 +3,15 @@
         <div class="col-12">
             <div class="card my-4">
                 <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
-                    <div class="bg-gradient-primary border-radius-lg pt-4 pb-3">
-                        <h4 class="text-white mx-3"><strong>New Medical Result</strong></h4>
+                    <div class="bg-gradient-primary border-radius-lg pt-4 pb-3 d-flex justify-content-between align-items-center px-3">
+                        <h4 class="text-white m-0"><strong>New Medical Result</strong></h4>
+                        @if ($selectedUser->medical_results()->latest()->first() && $selectedUser->medical_results()->latest()->first()->result_file_path)
+                            <a href="{{ url('/medical-results/view/' . $selectedUser->medical_results()->latest()->first()->id) }}" 
+                            class="btn btn-secondary btn-sm" 
+                            target="_blank">
+                            <i class="material-icons">visibility</i> View All Result Files
+                            </a>
+                        @endif
                     </div>
                 </div>  
                 <div class="container-fluid mx-2">           
@@ -31,51 +38,6 @@
 
                     <!-- Medical Results Form -->
                     <form wire:submit="store">
-                        @php
-                            // Define test display names and their corresponding keys
-                            $testDisplayMap = [
-                                'hepatitis_a' => 'Hepatitis A',
-                                'hepatitis_b' => 'Hepatitis B',
-                                'fecalysis' => 'Fecalysis',
-                                'xray' => 'Chest XRay',
-                                'cbc' => 'CBC',
-                                'blood_typing' => 'Blood Typing',
-                                'ishihara' => 'Ishihara',
-                                'urinalysis' => 'Urinalysis',
-                                'drugtest' => 'Drug Test'
-                            ];
-                            
-                            // Define abnormalities for each test
-                            $testAbnormalities = [
-                                'hepatitis_a' => ['Hepatitis A Positive'],
-                                'hepatitis_b' => ['Hepatitis B Positive'],
-                                'fecalysis' => ['Intestinal Parasites', 'Bacterial Infection', 'Occult Blood'],
-                                'xray' => ['Tuberculosis', 'Pneumonia', 'Broken Bones', 'Lung Scarring', 'COPD'],
-                                'cbc' => ['Anemia', 'Infection', 'Leukemia', 'Vitamin Deficiencies'],
-                                'blood_typing' => ['Rare Blood Type'],
-                                'ishihara' => ['Color Blindness'],
-                                'urinalysis' => ['UTI', 'Kidney Disease', 'Diabetes'],
-                                'drugtest' => ['Substance Abuse', 'Prescription Drug Abuse', 'Illegal Drug Use']
-                            ];
-                            
-                            // Determine which tests to show based on major and year level
-                            $isFoodRelated = $selectedUser->student_information->major->food_related;
-                            $isFirstYear = $selectedUser->student_information->year_level == "1st year";
-                            
-                            $availableTests = ['xray', 'drugtest'];
-                            
-                            if ($isFoodRelated) {
-                                array_push($availableTests, 'hepatitis_b', 'fecalysis');
-                                if ($isFirstYear) {
-                                    array_push($availableTests, 'cbc', 'blood_typing', 'urinalysis');
-                                }
-                            } else {
-                                if ($isFirstYear) {
-                                    array_push($availableTests, 'cbc', 'blood_typing', 'urinalysis');
-                                }
-                            }
-                        @endphp
-
                         @foreach ($availableTests as $testKey)
                             @php
                                 $testName = $testDisplayMap[$testKey] ?? ucfirst(str_replace('_', ' ', $testKey));

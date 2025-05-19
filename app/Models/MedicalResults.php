@@ -8,6 +8,7 @@ class MedicalResults extends Model
 {
     protected $fillable = [
         'appointment_id',
+        'user_id',
         'test_results',
         'condition',
         'additional_comments',
@@ -19,6 +20,10 @@ class MedicalResults extends Model
         'upload_date',
     ];
 
+    public function hasReviewedBy() {
+        return $this->reviewed_by != null;
+    }
+
     public function studentInformation()
     {
         return $this->appointment->student_information;
@@ -27,5 +32,10 @@ class MedicalResults extends Model
     public function appointment()
     {
         return $this->belongsTo(Appointment::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

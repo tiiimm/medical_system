@@ -6,9 +6,17 @@ use App\Models\Appointment;
 use App\Models\SystemSetting;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use Illuminate\Support\Facades\Auth;
 
 class BookAppointment extends Component
 {
+    public function mount()
+    {
+        if (!auth()->user()->allow_booking) {
+            return redirect()->route('dashboard')->with('error', 'Booking appointments is disabled.');
+        }
+    }
+
     #[On('save-appointment')]
     public function store($date, $schedule)
     {

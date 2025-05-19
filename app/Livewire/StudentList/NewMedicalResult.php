@@ -27,6 +27,32 @@ class NewMedicalResult extends Component
         'drugtest' => ['result' => 'Negative', 'abnormality' => null, 'remarks' => null],
     ];
 
+    public $testDisplayMap = [
+        'hepatitis_a' => 'Hepatitis A',
+        'hepatitis_b' => 'Hepatitis B',
+        'fecalysis' => 'Fecalysis',
+        'xray' => 'Chest XRay',
+        'cbc' => 'CBC',
+        'blood_typing' => 'Blood Typing',
+        'ishihara' => 'Ishihara',
+        'urinalysis' => 'Urinalysis',
+        'drugtest' => 'Drug Test'
+    ];
+
+    public $testAbnormalities = [
+        'hepatitis_a' => ['Hepatitis A Positive'],
+        'hepatitis_b' => ['Hepatitis B Positive'],
+        'fecalysis' => ['Intestinal Parasites', 'Bacterial Infection', 'Occult Blood'],
+        'xray' => ['Tuberculosis', 'Pneumonia', 'Broken Bones', 'Lung Scarring', 'COPD'],
+        'cbc' => ['Anemia', 'Infection', 'Leukemia', 'Vitamin Deficiencies'],
+        'blood_typing' => ['Rare Blood Type'],
+        'ishihara' => ['Color Blindness'],
+        'urinalysis' => ['UTI', 'Kidney Disease', 'Diabetes'],
+        'drugtest' => ['Substance Abuse', 'Prescription Drug Abuse', 'Illegal Drug Use']
+    ];
+
+    public $availableTests = ['xray', 'drugtest'];
+
     protected function rules()
     {
         $rules = [
@@ -34,7 +60,7 @@ class NewMedicalResult extends Component
             'additional_comments' => 'nullable|string',
         ];
 
-        foreach ($this->tests as $testName => $testData) {
+        foreach ($this->availableTests as $testName) {
             $rules["tests.$testName.result"] = 'required|string';
             $rules["tests.$testName.abnormality"] = "required_if:tests.$testName.result,Abnormal,Positive|string|nullable";
             $rules["tests.$testName.remarks"] = 'nullable|string';
@@ -85,7 +111,7 @@ class NewMedicalResult extends Component
         });
 
         // Save the medical results
-        $medical_result = $this->selectedUser->medical_results()->update([
+        $medical_result = $this->selectedUser->medical_results()->latest()->first()->update([
             'test_results' => json_encode($testResults),
             'condition' => $this->condition,
             'additional_comments' => $this->additional_comments,
@@ -95,19 +121,16 @@ class NewMedicalResult extends Component
             'reviewed_by' => auth()->user()->id,
             'uploaded_by' => auth()->user()->id
         ]);
-
-        session()->flash('success', 'Medical results saved successfully!');
         
-        // Uncomment these if needed
-        // $this->sendSms($this->formatPhoneNumber($this->selectedUser->student_information->user->profile->contact_number), $medical_result);
-        $this->generateCertificate($medical_result->id);
-        
-        return redirect('/appointment-list')->with(true);
+        return redirect('/student-list')->with(true);
     }
 
     public function mount()
     {
-        $this->selectedUser = $this->selectedUser->student_information->user;
+        if (session('selectedUser')){
+            $this->selectedUser = session('selectedUser');
+            session()->keep(['selectedUser']);
+        }
 
         if (!$this->selectedUser) {
             return redirect()->route('student-list')->with('error', 'No student selected.');
@@ -130,10 +153,10 @@ class NewMedicalResult extends Component
         $qrCodeUrl = base64_encode($qrCodeBinary->getString());
 
         $payload = [
-            'studentName' => $medicalResult->appointment->student_information->user->name,
-            'yearLevel' => $medicalResult->appointment->student_information->year_level,
-            'course' => $medicalResult->appointment->student_information->program->name,
-            'dateReleased' => $medicalResult->appointment->appointment_date,
+            'studentName' => $medicalResult->user->student_information->user->name,
+            'yearLevel' => $medicalResult->user->student_information->year_level,
+            'course' => $medicalResult->user->student_information->program->name,
+            'dateReleased' => $medicalResult->appointment->appointment_date??now(),
             'qrCodeUrl' => $qrCodeUrl,
             'document' => 'medical-certificate',
             'width' => 8.5,
@@ -191,6 +214,6 @@ class NewMedicalResult extends Component
 
     public function render()
     {
-        return view('livewire.appointment-list.result');
+        return view('livewire.student-list.new-medical-result');
     }
 }

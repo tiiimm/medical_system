@@ -14,6 +14,7 @@ class SystemSettings extends Component
     public $sy_end;
     public $medical_start;
     public $medical_end;
+    public $allow_booking;
 
     public function mount()
     {
@@ -26,7 +27,9 @@ class SystemSettings extends Component
         $this->sy_end = explode('-', $settings->school_year)[1];
         $this->medical_start = $settings->medical_start;
         $this->medical_end = $settings->medical_end;
+        $this->allow_booking = $settings->allow_booking;
     }
+
 
     public function updateSyEnd()
     {
@@ -41,6 +44,7 @@ class SystemSettings extends Component
             'slots' => 'required|integer',
             'medical_start' => 'required|date',
             'medical_end' => 'required|date',
+            'allow_booking' => 'required|boolean',
         ]);
 
         $settings = SystemSetting::first();
@@ -51,6 +55,7 @@ class SystemSettings extends Component
             'medical_start' => $this->medical_start,
             'medical_end' => $this->medical_end,
             'slots' => $this->slots,
+            'allow_booking' => $this->allow_booking,
         ]);
 
         session()->flash('message', 'Settings updated successfully!');

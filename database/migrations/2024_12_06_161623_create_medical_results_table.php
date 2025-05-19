@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('medical_results', function (Blueprint $table) {
             $table->engine = 'InnoDB';$table->id();
-            $table->foreignId('appointment_id')->constrained();
+            $table->foreignId('user_id')->constrained();
+            $table->unsignedBigInteger('appointment_id')->nullable();
             $table->json('test_results')->nullable();
             $table->text('condition')->nullable();
             $table->text('additional_comments')->nullable();
@@ -21,11 +22,12 @@ return new class extends Migration
             $table->string('school_year');
             $table->string('semester');
             $table->date('upload_date');
-            $table->unsignedBigInteger('reviewed_by');
+            $table->unsignedBigInteger('reviewed_by')->nullable();
             $table->unsignedBigInteger('uploaded_by');
             $table->timestamps();
 
 
+            $table->foreign('appointment_id')->references('id')->on('appointments')->onDelete('cascade');
             $table->foreign('reviewed_by')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('uploaded_by')->references('id')->on('users')->onDelete('cascade');
         });

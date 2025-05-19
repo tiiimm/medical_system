@@ -183,10 +183,10 @@ class AppointmentResult extends Component
         $qrCodeUrl = base64_encode($qrCodeBinary->getString());
 
         $payload = [
-            'studentName' => $medicalResult->appointment->student_information->user->name,
-            'yearLevel' => $medicalResult->appointment->student_information->year_level,
-            'course' => $medicalResult->appointment->student_information->program->name,
-            'dateReleased' => $medicalResult->appointment->appointment_date,
+            'studentName' => $medicalResult->user->student_information->user->name,
+            'yearLevel' => $medicalResult->user->student_information->year_level,
+            'course' => $medicalResult->user->student_information->program->name,
+            'dateReleased' => $medicalResult->appointment->appointment_date?? now(),
             'qrCodeUrl' => $qrCodeUrl,
             'document' => 'medical-certificate',
             'width' => 8.5,

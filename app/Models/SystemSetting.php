@@ -12,5 +12,10 @@ class SystemSetting extends Model
         'medical_start',
         'medical_end',
         'slots',
+        'allow_booking',
+    ];
+
+    protected $casts = [
+        'allow_booking' => 'boolean',
     ];
 }
