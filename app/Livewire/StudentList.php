@@ -53,7 +53,8 @@ class StudentList extends Component
     // Filter the students based on selected filters
     public function filterUsers()
     {
-        $query = User::where('role', 'student');
+        $query = User::where('role', 'student')
+            ->whereNotNull('name');
 
         // Apply filters to the user query directly
         if ($this->campus_id) {

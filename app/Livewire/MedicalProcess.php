@@ -22,22 +22,39 @@ class MedicalProcess extends Component
 
     public function store()
     {
-        $this->validate([
-            'result_files.*' => 'nullable|file|mimes:pdf,jpg,jpeg,png',
-        ], [
-            'result_files.*.mimes' => 'Only PDF, JPG, JPEG, and PNG files are allowed.',
-        ]);
+        $existing = auth()->user()->medical_results()
+            ->where('school_year', '2024-2025')
+            ->where('semester', '2nd sem')
+            ->exists();
 
-        // Total size validation (max 2MB)
-        $totalSize = collect($this->result_files)->sum(function ($file) {
-            return $file->getSize(); // in bytes
-        });
-
-        if ($totalSize > 2 * 1024 * 1024) {
-            $this->reset('result_files');
-            $this->addError('result_files', 'The total size of selected files must not exceed 2MB.');
+        if ($existing) {
+            $this->js("alert('You have already submitted results for the 2024–2025 2nd semester. Can\'t submit again.')");
             return;
         }
+        $this->validate([
+            'result_files.*' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048', // 2048 KB = 2MB
+        ], [
+            'result_files.*.mimes' => 'Only PDF, JPG, JPEG, and PNG files are allowed.',
+            'result_files.*.max' => 'Each file must not be larger than 2MB.',
+        ]);
+
+        
+        // $this->validate([
+        //     'result_files.*' => 'nullable|file|mimes:pdf,jpg,jpeg,png',
+        // ], [
+        //     'result_files.*.mimes' => 'Only PDF, JPG, JPEG, and PNG files are allowed.',
+        // ]);
+
+        // // Total size validation (max 2MB)
+        // $totalSize = collect($this->result_files)->sum(function ($file) {
+        //     return $file->getSize(); // in bytes
+        // });
+
+        // if ($totalSize > 2 * 1024 * 1024) {
+        //     $this->reset('result_files');
+        //     $this->addError('result_files', 'The total size of selected files must not exceed 2MB.');
+        //     return;
+        // }
 
         $filePaths = [];
 

@@ -41,7 +41,7 @@
                         @foreach ($availableTests as $testKey)
                             @php
                                 $testName = $testDisplayMap[$testKey] ?? ucfirst(str_replace('_', ' ', $testKey));
-                                $isBinaryResult = in_array($testKey, ['hepatitis_a', 'hepatitis_b', 'drugtest']);
+                                $isBinaryResult = in_array($testKey, ['hepatitis_b', 'drugtest']);
                             @endphp
                             
                             <div class="row mt-2">

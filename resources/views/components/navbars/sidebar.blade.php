@@ -128,25 +128,29 @@
                     <span class="nav-link-text ms-1">Students List</span>
                 </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link text-white {{ str_starts_with(Route::currentRouteName(), 'appointment-list') ? ' active bg-gradient-primary' : '' }} "
-                    href="{{ route('appointment-list') }}">
-                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="material-icons opacity-10">checklist</i>
-                    </div>
-                    <span class="nav-link-text ms-1">Appointment List</span>
-                </a>
-            </li>
+            @if(auth()->user()->allow_booking)
+                <li class="nav-item">
+                    <a class="nav-link text-white {{ str_starts_with(Route::currentRouteName(), 'appointment-list') ? ' active bg-gradient-primary' : '' }} "
+                        href="{{ route('appointment-list') }}">
+                        <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                            <i class="material-icons opacity-10">checklist</i>
+                        </div>
+                        <span class="nav-link-text ms-1">Appointment List</span>
+                    </a>
+                </li>
+            @endif
             @elseif(auth()->user()->hasRole('drrmo staff'))
-            <li class="nav-item">
-                <a class="nav-link text-white {{ str_starts_with(Route::currentRouteName(), 'appointment-list') ? ' active bg-gradient-primary' : '' }} "
-                    href="{{ route('appointment-list') }}">
-                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="material-icons opacity-10">list</i>
-                    </div>
-                    <span class="nav-link-text ms-1">Appointment List</span>
-                </a>
-            </li>
+                @if(auth()->user()->allow_booking)
+                <li class="nav-item">
+                    <a class="nav-link text-white {{ str_starts_with(Route::currentRouteName(), 'appointment-list') ? ' active bg-gradient-primary' : '' }} "
+                        href="{{ route('appointment-list') }}">
+                        <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                            <i class="material-icons opacity-10">list</i>
+                        </div>
+                        <span class="nav-link-text ms-1">Appointment List</span>
+                    </a>
+                </li>
+                @endif
             @elseif(auth()->user()->hasRole('student'))
                 @if(auth()->user()->allow_booking)
                     <li class="nav-item">

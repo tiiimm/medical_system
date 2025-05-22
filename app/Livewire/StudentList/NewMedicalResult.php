@@ -16,7 +16,7 @@ class NewMedicalResult extends Component
     public $condition;
     public $additional_comments;
     public $tests = [
-        'hepatitis_a' => ['result' => 'Negative', 'abnormality' => null, 'remarks' => null],
+        // 'hepatitis_a' => ['result' => 'Negative', 'abnormality' => null, 'remarks' => null],
         'hepatitis_b' => ['result' => 'Negative', 'abnormality' => null, 'remarks' => null],
         'fecalysis' => ['result' => 'Normal', 'abnormality' => null, 'remarks' => null],
         'xray' => ['result' => 'Normal', 'abnormality' => null, 'remarks' => null],
@@ -28,7 +28,7 @@ class NewMedicalResult extends Component
     ];
 
     public $testDisplayMap = [
-        'hepatitis_a' => 'Hepatitis A',
+        // 'hepatitis_a' => 'Hepatitis A',
         'hepatitis_b' => 'Hepatitis B',
         'fecalysis' => 'Fecalysis',
         'xray' => 'Chest XRay',
@@ -40,7 +40,7 @@ class NewMedicalResult extends Component
     ];
 
     public $testAbnormalities = [
-        'hepatitis_a' => ['Hepatitis A Positive'],
+        // 'hepatitis_a' => ['Hepatitis A Positive'],
         'hepatitis_b' => ['Hepatitis B Positive'],
         'fecalysis' => ['Intestinal Parasites', 'Bacterial Infection', 'Occult Blood'],
         'xray' => ['Tuberculosis', 'Pneumonia', 'Broken Bones', 'Lung Scarring', 'COPD'],
@@ -77,7 +77,10 @@ class NewMedicalResult extends Component
         
         // Build test results array based on student's major and year level
         $isFoodRelated = $this->selectedUser->student_information->major->food_related;
-        $isFirstYear = $this->selectedUser->student_information->year_level == 1;
+        $isFirstYear = $this->selectedUser->student_information->year_level == '1st year';
+
+        // dd($isFoodRelated);
+        // dd($isFirstYear);
 
         // Always include these tests
         $testResults['XRay'] = $this->tests['xray'];
@@ -85,7 +88,7 @@ class NewMedicalResult extends Component
 
         // Include additional tests based on conditions
         if ($isFoodRelated) {
-            $testResults['Hepatitis A'] = $this->tests['hepatitis_a'];
+            // $testResults['Hepatitis A'] = $this->tests['hepatitis_a'];
             $testResults['Hepatitis B'] = $this->tests['hepatitis_b'];
             $testResults['Fecalysis'] = $this->tests['fecalysis'];
             
@@ -103,7 +106,7 @@ class NewMedicalResult extends Component
         }
 
         // Include Ishihara test if needed (add your condition)
-        $testResults['Ishihara'] = $this->tests['ishihara'];
+        // $testResults['Ishihara'] = $this->tests['ishihara'];
 
         // Filter out empty tests
         $testResults = array_filter($testResults, function ($test) {
@@ -119,7 +122,6 @@ class NewMedicalResult extends Component
             'school_year' => now()->month <= 6 ? (now()->year - 1) . '-' . now()->year : now()->year . '-' . (now()->year + 1),
             'upload_date' => now(),
             'reviewed_by' => auth()->user()->id,
-            'uploaded_by' => auth()->user()->id
         ]);
         
         return redirect('/student-list')->with(true);
@@ -127,15 +129,39 @@ class NewMedicalResult extends Component
 
     public function mount()
     {
-        if (session('selectedUser')){
-            $this->selectedUser = session('selectedUser');
+        $this->selectedUser = session('selectedUser');
+        if (session('selectedUser')) {
             session()->keep(['selectedUser']);
         }
 
         if (!$this->selectedUser) {
-            return redirect()->route('student-list')->with('error', 'No student selected.');
+            return redirect()->route('appointment-list')->with('error', 'No student selected.');
+        }
+        
+        $isFoodRelated = $this->selectedUser->student_information->major->food_related;
+        $isFirstYear = $this->selectedUser->student_information->year_level == "1st year";
+        
+        if ($isFoodRelated) {
+            array_push($this->availableTests, 'hepatitis_b', 'fecalysis');
+            if ($isFirstYear) {
+                array_push($this->availableTests, 'cbc', 'blood_typing', 'urinalysis');
+            }
+        } else {
+            if ($isFirstYear) {
+                array_push($this->availableTests, 'cbc', 'blood_typing', 'urinalysis');
+            }
         }
     }
+    // {
+    //     if (session('selectedUser')){
+    //         $this->selectedUser = session('selectedUser');
+    //         session()->keep(['selectedUser']);
+    //     }
+
+    //     if (!$this->selectedUser) {
+    //         return redirect()->route('student-list')->with('error', 'No student selected.');
+    //     }
+    // }
 
     public function generateCertificate($medicalResultId)
     {

@@ -17,7 +17,7 @@ class AppointmentResult extends Component
     public $condition;
     public $additional_comments;
     public $tests = [
-        'hepatitis_a' => ['result' => 'Negative', 'abnormality' => null, 'remarks' => null],
+        // 'hepatitis_a' => ['result' => 'Negative', 'abnormality' => null, 'remarks' => null],
         'hepatitis_b' => ['result' => 'Negative', 'abnormality' => null, 'remarks' => null],
         'fecalysis' => ['result' => 'Normal', 'abnormality' => null, 'remarks' => null],
         'xray' => ['result' => 'Normal', 'abnormality' => null, 'remarks' => null],
@@ -29,7 +29,7 @@ class AppointmentResult extends Component
     ];
 
     public $testDisplayMap = [
-        'hepatitis_a' => 'Hepatitis A',
+        // 'hepatitis_a' => 'Hepatitis A',
         'hepatitis_b' => 'Hepatitis B',
         'fecalysis' => 'Fecalysis',
         'xray' => 'Chest XRay',
@@ -41,7 +41,7 @@ class AppointmentResult extends Component
     ];
 
     public $testAbnormalities = [
-        'hepatitis_a' => ['Hepatitis A Positive'],
+        // 'hepatitis_a' => ['Hepatitis A Positive'],
         'hepatitis_b' => ['Hepatitis B Positive'],
         'fecalysis' => ['Intestinal Parasites', 'Bacterial Infection', 'Occult Blood'],
         'xray' => ['Tuberculosis', 'Pneumonia', 'Broken Bones', 'Lung Scarring', 'COPD'],
@@ -78,7 +78,7 @@ class AppointmentResult extends Component
         
         // Build test results array based on student's major and year level
         $isFoodRelated = $this->selectedAppointment->student_information->major->food_related;
-        $isFirstYear = $this->selectedAppointment->student_information->year_level == 1;
+        $isFirstYear = $this->selectedAppointment->student_information->year_level == '1st year';
 
         // Always include these tests
         $testResults['XRay'] = $this->tests['xray'];
@@ -86,7 +86,7 @@ class AppointmentResult extends Component
 
         // Include additional tests based on conditions
         if ($isFoodRelated) {
-            $testResults['Hepatitis A'] = $this->tests['hepatitis_a'];
+            // $testResults['Hepatitis A'] = $this->tests['hepatitis_a'];
             $testResults['Hepatitis B'] = $this->tests['hepatitis_b'];
             $testResults['Fecalysis'] = $this->tests['fecalysis'];
             
@@ -104,7 +104,7 @@ class AppointmentResult extends Component
         }
 
         // Include Ishihara test if needed (add your condition)
-        $testResults['Ishihara'] = $this->tests['ishihara'];
+        // $testResults['Ishihara'] = $this->tests['ishihara'];
 
         // Filter out empty tests
         $testResults = array_filter($testResults, function ($test) {

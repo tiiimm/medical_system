@@ -41,7 +41,8 @@
                         @foreach ($availableTests as $testKey)
                             @php
                                 $testName = $testDisplayMap[$testKey] ?? ucfirst(str_replace('_', ' ', $testKey));
-                                $isBinaryResult = in_array($testKey, ['hepatitis_a', 'hepatitis_b', 'drugtest']);
+                                $isBinaryResult = in_array($testKey, ['hepatitis_b', 'drugtest']);
+                                $isBloodType = in_array($testKey, ['blood_typing']);
                             @endphp
                             
                             <div class="row mt-2">
@@ -54,6 +55,15 @@
                                         @if ($isBinaryResult)
                                             <option value="Positive">Positive</option>
                                             <option value="Negative">Negative</option>
+                                        @elseif ($isBloodType)
+                                            <option value="A+">A+</option>
+                                            <option value="A-">A-</option>
+                                            <option value="B+">B+</option>
+                                            <option value="B-">B-</option>
+                                            <option value="AB+">AB+</option>
+                                            <option value="AB-">AB-</option>
+                                            <option value="O+">O+</option>
+                                            <option value="O-">O-</option>
                                         @else
                                             <option value="Normal">Normal</option>
                                             <option value="Abnormal">Abnormal</option>

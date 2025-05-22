@@ -161,11 +161,11 @@
                 <p><strong>VITAL SIGNS:</strong></p>
 
                 <p style="text-align: center;">
-                    <span style="display: inline-block; width: 30%;"><strong>T:</strong><u>36°C</u></span>
-                    <span style="display: inline-block; width: 30%;"><strong>PR:</strong><u>80 bpm</u></span>
-                    <span style="display: inline-block; width: 30%;"><strong>RR:</strong><u>18 breaths/min</u></span><br>
-                    <span style="display: inline-block; width: 30%;"><strong>SPO2:</strong><u>98%</u></span>
-                    <span style="display: inline-block; width: 30%;"><strong>BP:</strong><u>120/80 mmHg</u></span>
+                    <span style="display: inline-block; width: 30%;"><strong>T:</strong><u>________</u></span>
+                    <span style="display: inline-block; width: 30%;"><strong>PR:</strong><u>________</u></span>
+                    <span style="display: inline-block; width: 30%;"><strong>RR:</strong><u>________</u></span><br>
+                    <span style="display: inline-block; width: 30%;"><strong>SPO2:</strong><u>________</u></span>
+                    <span style="display: inline-block; width: 30%;"><strong>BP:</strong><u>________</u></span>
                 </p>
 
                 <p>

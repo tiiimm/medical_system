@@ -43,6 +43,11 @@
                             <div class="custom-file-upload">
                                 <input wire:model="result_files" type="file" class="form-control d-none" id="result_files" accept=".pdf,.jpg,.jpeg,.png" multiple>
                                 <label for="result_files" class="upload-label">Choose Files</label>
+
+                                <div wire:loading wire:target="result_files" class="text-info mt-1">
+                                    Uploading files...
+                                </div>
+
                                 <span class="file-name mt-1">
                                     @if ($result_files && count($result_files) > 0)
                                         <ul class="list-unstyled mb-0">
@@ -54,11 +59,19 @@
                                         No file selected
                                     @endif
                                 </span>
+
+                                {{-- ✅ File count warning --}}
+                                @if ($result_files && count($result_files) > 4)
+                                    <p class="text-danger mt-1">You can only upload up to 4 files.</p>
+                                @endif
+
+                                {{-- Validation error from server --}}
+                                @error('result_files')
+                                    <p class="text-danger">{{ $message }}</p>
+                                @enderror
                             </div>
-                            @error('result_files')
-                                <p class="text-danger">{{ $message }}</p>
-                            @enderror
                         </div>
+
 
                         <!-- Submit Button -->
                         <div class="row mt-4">
