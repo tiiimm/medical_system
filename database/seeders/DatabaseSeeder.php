@@ -30,8 +30,8 @@ class DatabaseSeeder extends Seeder
         // Appointment::factory(10)->create(); //allow if testing
 
         SystemSetting::create([
-            'semester' => '2nd Semester',
-            'school_year' => '2024-2025',
+            'semester' => '1st Semester',
+            'school_year' => '2025-2026',
             'medical_start' => now()->subDay()->format('Y-m-d'),
             'medical_end' => now()->subDay()->addDays(10)->format('Y-m-d'),
             'slots' => '300',

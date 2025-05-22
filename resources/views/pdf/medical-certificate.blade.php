@@ -176,9 +176,9 @@
             <?php $qr_path = $qrCodeUrl; ?>
             <img src="data:image/png;base64,{{ $qr_path }}" alt="QR Code" width="150">
         </div>
-        <p>This is to certify that <strong><u>{{ $studentName }}</u></strong>, _________ years old, a <strong>{{ $yearLevel }} year</strong> {{ $course }} student of this university
+        <p>This is to certify that <strong><u>{{ $studentName }}</u></strong>, {{ $user['Age'] }} years old, a <strong>{{ $yearLevel }} year</strong> {{ $course }} student of this university
             has been seen and examined by the undersigned.<br><br><br>
-            <strong>PURPOSE: <u>FOR ENROLLMENT SY 2024-2025</u>.</strong><br><br>
+            <strong>PURPOSE: <u>FOR ENROLLMENT SY {{ $system['school_year'] }}</u>.</strong><br><br>
             <strong>REMARKS: <u>FIT FOR ENROLLMENT</u>.</strong><br><br><br>
             <br><br>
         </p>

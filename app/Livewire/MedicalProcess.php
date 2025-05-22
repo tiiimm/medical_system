@@ -23,12 +23,15 @@ class MedicalProcess extends Component
     public function store()
     {
         $existing = auth()->user()->medical_results()
-            ->where('school_year', '2024-2025')
-            ->where('semester', '2nd sem')
+            ->where('school_year', auth()->user()->SystemSetting->school_year)
+            ->where('semester', auth()->user()->SystemSetting->semester)
             ->exists();
 
+        $existing = true;
+
         if ($existing) {
-            $this->js("alert('You have already submitted results for the 2024–2025 2nd semester. Can\'t submit again.')");
+            $text = 'You have already submitted results for the '. auth()->user()->SystemSetting->school_year .'  '. auth()->user()->SystemSetting->semester .'. Can\'t submit again.';
+            $this->js("alert(" . json_encode($text) . ")");
             return;
         }
         $this->validate([
@@ -65,13 +68,19 @@ class MedicalProcess extends Component
 
         $paths = $filePaths[0] ? json_encode($filePaths) : null;
 
-        // Example: store only the first file path, or handle multiple records if needed
+        // $medical_result = auth()->user()->medical_results()->create([
+        //     'result_file_path' => $paths,
+        //     'semester' => now()->month <= 6 ? '2nd sem' : '1st sem',
+        //     'school_year' => now()->month <= 6
+        //         ? (now()->year - 1) . '-' . now()->year
+        //         : now()->year . '-' . (now()->year + 1),
+        //     'upload_date' => now(),
+        //     'uploaded_by' => auth()->user()->id
+        // ]);
         $medical_result = auth()->user()->medical_results()->create([
             'result_file_path' => $paths,
-            'semester' => now()->month <= 6 ? '2nd sem' : '1st sem',
-            'school_year' => now()->month <= 6
-                ? (now()->year - 1) . '-' . now()->year
-                : now()->year . '-' . (now()->year + 1),
+            'semester' => auth()->user()->SystemSetting->semester,
+            'school_year' => auth()->user()->SystemSetting->school_year,
             'upload_date' => now(),
             'uploaded_by' => auth()->user()->id
         ]);

@@ -13,6 +13,7 @@ class DocumentPreviewController extends Controller
     public function preview(Request $request)
     {
         $data = Crypt::decrypt(request()->get('token'));
+        $data['system'] = auth()->user()->SystemSetting;
         
         $pdf = Pdf::loadView('pdf.'.$data['document'], $data)->setPaper([0, 0, $data['width'] * 72, $data['height'] * 72])->setOption('margin-top', 0)
            ->setOption('margin-bottom', 0)

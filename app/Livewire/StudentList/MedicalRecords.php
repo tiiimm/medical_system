@@ -108,6 +108,7 @@ class MedicalRecords extends Component
             'document' => 'medical-certificate',
             'width' => 8.5,
             'height' => 13,
+            'user' => $this->selectedUser
         ];
         $encrypted = Crypt::encrypt($payload);
 

@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Carbon\Carbon;
 
 class User extends Authenticatable
 {
@@ -53,6 +54,16 @@ class User extends Authenticatable
     {
         $setting = \App\Models\SystemSetting::first();
         return $setting ? $setting->allow_booking : false;
+    }
+
+    public function getAgeAttribute()
+    {
+        return Carbon::parse($this->profile->medical_profile->birthdate)->age;
+    }
+
+    public function getSystemSettingAttribute()
+    {
+        return SystemSetting::all()[0];
     }
 
     public function hasProfile() {
