@@ -27,8 +27,6 @@ class MedicalProcess extends Component
             ->where('semester', auth()->user()->SystemSetting->semester)
             ->exists();
 
-        $existing = true;
-
         if ($existing) {
             $text = 'You have already submitted results for the '. auth()->user()->SystemSetting->school_year .'  '. auth()->user()->SystemSetting->semester .'. Can\'t submit again.';
             $this->js("alert(" . json_encode($text) . ")");
