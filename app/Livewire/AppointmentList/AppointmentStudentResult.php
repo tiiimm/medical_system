@@ -18,33 +18,31 @@ class AppointmentStudentResult extends Component
 
     public function store()
     {
-        $this->validate([
-            'result_files.*' => 'nullable|file|mimes:pdf,jpg,jpeg,png',
-        ], [
-            'result_files.*.mimes' => 'Only PDF, JPG, JPEG, and PNG files are allowed.',
-        ]);
+        $existing = auth()->user()->medical_results()
+            ->where('school_year', auth()->user()->SystemSetting->school_year)
+            ->where('semester', auth()->user()->SystemSetting->semester)
+            ->exists();
 
-        // Total size validation (max 2MB)
-        $totalSize = collect($this->result_files)->sum(function ($file) {
-            return $file->getSize(); // in bytes
-        });
-
-        if ($totalSize > 2 * 1024 * 1024) {
-            $this->reset('result_files');
-            $this->addError('result_files', 'The total size of selected files must not exceed 2MB.');
+        if ($existing) {
+            $text = 'You have already submitted results for the '. auth()->user()->SystemSetting->school_year .'  '. auth()->user()->SystemSetting->semester .'. Can\'t submit again.';
+            $this->js("alert(" . json_encode($text) . ")");
             return;
         }
+        $this->validate([
+            'result_files.*' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:3072', // 3072 KB = 3MB
+        ], [
+            'result_files.*.mimes' => 'Only PDF, JPG, JPEG, and PNG files are allowed.',
+            'result_files.*.max' => 'Each file must not be larger than 3MB.',
+        ]);
 
         $filePaths = [];
 
-        // Save each uploaded file
         foreach ($this->result_files as $file) {
             $filePaths[] = $file->store('documents', 'public');
         }
 
         $paths = $filePaths[0] ? json_encode($filePaths) : null;
 
-        // Example: store only the first file path, or handle multiple records if needed
         $medical_result = $this->selectedAppointment->medical_results()->create([
             'user_id' => auth()->id(),
             'result_file_path' => $paths,

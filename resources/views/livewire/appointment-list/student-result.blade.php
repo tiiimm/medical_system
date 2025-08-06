@@ -9,7 +9,7 @@
                 </div>  
                 <div class="container-fluid mx-2">           
                     <!-- Medical Results Form -->
-                    <span class="text-black mx-0">Note: Don't submit results until you've completed the medical process. You may upload 1 or more files either image or PDF as long as the total size is does not exceed 2MB</span>
+                    <span class="text-black mx-0">Note: Don't submit results until you've completed the medical process. You may upload 1 or more files either image or PDF as long as each file size does not exceed 3MB</span>
                     <form wire:submit="store"> 
                         <!-- File Upload Section -->
                         <div class="row mt-4 px-6">

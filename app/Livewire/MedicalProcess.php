@@ -22,6 +22,23 @@ class MedicalProcess extends Component
 
     public function store()
     {
+        // $this->validate([
+        //     'result_files.*' => 'nullable|file|mimes:pdf,jpg,jpeg,png',
+        // ], [
+        //     'result_files.*.mimes' => 'Only PDF, JPG, JPEG, and PNG files are allowed.',
+        // ]);
+
+        // // Total size validation (max 3MB)
+        // $totalSize = collect($this->result_files)->sum(function ($file) {
+        //     return $file->getSize(); // in bytes
+        // });
+
+        // if ($totalSize > 2 * 1024 * 1024) {
+        //     $this->reset('result_files');
+        //     $this->addError('result_files', 'The total size of selected files must not exceed 3MB.');
+        //     return;
+        // }
+
         $existing = auth()->user()->medical_results()
             ->where('school_year', auth()->user()->SystemSetting->school_year)
             ->where('semester', auth()->user()->SystemSetting->semester)
@@ -33,33 +50,14 @@ class MedicalProcess extends Component
             return;
         }
         $this->validate([
-            'result_files.*' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048', // 2048 KB = 2MB
+            'result_files.*' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:3072', // 3072 KB = 3MB
         ], [
             'result_files.*.mimes' => 'Only PDF, JPG, JPEG, and PNG files are allowed.',
-            'result_files.*.max' => 'Each file must not be larger than 2MB.',
+            'result_files.*.max' => 'Each file must not be larger than 3MB.',
         ]);
-
-        
-        // $this->validate([
-        //     'result_files.*' => 'nullable|file|mimes:pdf,jpg,jpeg,png',
-        // ], [
-        //     'result_files.*.mimes' => 'Only PDF, JPG, JPEG, and PNG files are allowed.',
-        // ]);
-
-        // // Total size validation (max 2MB)
-        // $totalSize = collect($this->result_files)->sum(function ($file) {
-        //     return $file->getSize(); // in bytes
-        // });
-
-        // if ($totalSize > 2 * 1024 * 1024) {
-        //     $this->reset('result_files');
-        //     $this->addError('result_files', 'The total size of selected files must not exceed 2MB.');
-        //     return;
-        // }
 
         $filePaths = [];
 
-        // Save each uploaded file
         foreach ($this->result_files as $file) {
             $filePaths[] = $file->store('documents', 'public');
         }

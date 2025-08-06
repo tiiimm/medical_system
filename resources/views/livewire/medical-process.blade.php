@@ -36,7 +36,7 @@
                         @endforeach
                     </div>
 
-                    <span class="text-black mx-0">Note: Don't submit results until you've completed the medical process. You may upload 1 or more files either image or PDF as long as the total size is does not exceed 2MB</span>
+                    <span class="text-black mx-0">Note: Don't submit results until you've completed the medical process. You may upload 1 or more files either image or PDF as long as each file size does not exceed 3MB</span>
                     <form wire:submit="store"> 
                         <!-- File Upload Section -->
                         <div class="row mt-4 px-6">
@@ -65,10 +65,11 @@
                                     <p class="text-danger mt-1">You can only upload up to 4 files.</p>
                                 @endif
 
-                                {{-- Validation error from server --}}
-                                @error('result_files')
-                                    <p class="text-danger">{{ $message }}</p>
-                                @enderror
+                                @if ($errors->any())
+                                    @foreach ($errors->all() as $error)
+                                        <p class="text-danger text-sm">{{ $error }}</p>
+                                    @endforeach
+                                @endif
                             </div>
                         </div>
 
@@ -76,7 +77,15 @@
                         <!-- Submit Button -->
                         <div class="row mt-4">
                             <div class="col-12 text-end">
-                                <button type="submit" class="btn btn-primary">Submit</button>
+                                <button 
+                                    type="submit" 
+                                    class="btn btn-primary"
+                                    wire:loading.attr="disabled"
+                                    wire:target="result_files,store"
+                                    @if(!$result_files || count($result_files) === 0 || count($result_files) > 4) disabled @endif
+                                >
+                                    Submit
+                                </button>
                             </div>
                         </div>
                     </form>
