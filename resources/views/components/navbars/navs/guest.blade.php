@@ -2,8 +2,8 @@
 <nav id="navbar" class="navbar navbar-expand-lg blur border-radius-lg top-0 z-index-3 shadow position-absolute mt-4 py-2 start-0 end-0 mx-lg-4 mx-2">
     <div class="container-fluid ps-2 pe-0">
         <a class="navbar-brand ms-lg-0 ms-3 d-flex flex-column" href="{{ route('landing') }}">
-            <span class="font-weight-bolder">School Medical System</span>
-            <span class="font-weight-lighter text-xs">Medical Examination Process Automation System</span>
+            <span class="font-weight-bolder">Medical Examination Records Management and Analytics System</span>
+            <span class="font-weight-lighter text-xs">Medical Examination Records Management and Analytics System</span>
         </a>
         <button class="navbar-toggler shadow-none ms-2" type="button" data-bs-toggle="collapse"
             data-bs-target="#navigation" aria-controls="navigation" aria-expanded="false"
