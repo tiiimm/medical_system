@@ -221,6 +221,20 @@
                 </div>
             </div>
         </div>
+        <div class="card z-index-2 mt-4">
+            <div class="card-header p-0">
+                <div class="icon icon-lg icon-shape bg-gradient-info shadow-info text-center border-radius-xl mt-n4 me-3 float-start">
+                <i class="material-icons opacity-10">psychology</i>
+                </div>
+                <h6 class="mb-0">AI Medical Insights</h6>
+            </div>
+            <div class="card-body">
+                <p id="aiInsightText" class="text-sm mb-3">
+                Generating insights based on the latest medical data...
+                </p>
+                <button id="refreshInsightBtn" class="btn btn-sm bg-gradient-primary">Regenerate Insight</button>
+            </div>
+            </div>
     </div>
 </div>
 
@@ -613,6 +627,69 @@
                 },
             },
         }
+    });
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const aiInsightText = document.getElementById("aiInsightText");
+        const refreshBtn = document.getElementById("refreshInsightBtn");
+
+        async function loadMedicalInsights() {
+            aiInsightText.textContent = "Generating insights, please wait...";
+            console.log(JSON.stringify({
+                        healthy: @json($healthyStudentsCount),
+                        uti: @json($uticasesCount),
+                        drugTest: @json($drugPositiveCount),
+                        leukemia: @json($leukemiaStudentsCount),
+                        kidney: @json($kidneyStudentsCount),
+                        diabetes: @json($diabetesStudentsCount),
+                        pneumonia: @json($pneumoniaStudentsCount),
+                        tb: @json($tbStudentsCount)
+                    }));
+
+            try {
+                const res = await fetch("{{ route('ai.dashboard.insight') }}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                    },
+                    body: JSON.stringify({
+                        healthy: @json($healthyStudentsCount),
+                        uti: @json($uticasesCount),
+                        drugTest: @json($drugPositiveCount),
+                        leukemia: @json($leukemiaStudentsCount),
+                        kidney: @json($kidneyStudentsCount),
+                        diabetes: @json($diabetesStudentsCount),
+                        pneumonia: @json($pneumoniaStudentsCount),
+                        tb: @json($tbStudentsCount)
+                    })
+                });
+
+                const text = await res.text();
+                console.log("Raw AI response:", text);
+
+                let data;
+                try {
+                    data = JSON.parse(text);
+                    console.log("✅ Parsed AI JSON:", data);
+                } catch (err) {
+                    aiInsightText.textContent = "Unable to generate insight (invalid format).";
+                    console.error("JSON parse error:", err);
+                    return;
+                }
+
+                aiInsightText.textContent = data.insight || "No insights generated.";
+            } catch (error) {
+                console.error("Insight fetch error:", error);
+                aiInsightText.textContent = "Unable to generate insight right now.";
+            }
+        }
+
+        // Auto-load once page is ready
+        loadMedicalInsights();
+
+        // Manual refresh button
+        refreshBtn.addEventListener("click", loadMedicalInsights);
     });
 
 </script>

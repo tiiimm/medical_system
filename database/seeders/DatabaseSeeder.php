@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
         $this->call(CampusSeeder::class);
         $this->call(CollegeSeeder::class);
         $this->call(ProgramSeeder::class);
-        // $this->call(UserSeeder::class);
+        $this->call(UserSeeder::class);
 
 
         User::factory(1)->create([

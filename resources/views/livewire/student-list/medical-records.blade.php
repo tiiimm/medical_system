@@ -131,6 +131,10 @@
                     <p><strong>Additional Comments:</strong> {{ $selectedMedicalRecord->additional_comments??'None' }}</p>
                 </div>
                 @endif
+                <div style="margin-right: 18px; margin-left: 18px;">
+                    <p><strong id="ai-insight">AI-Generated Insights:</strong>
+                    <span id="ai-insight-text">Generating...</span></p>
+                </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     @if ($selectedMedicalRecord != null)
@@ -148,7 +152,49 @@
 
 <script>
     window.addEventListener('show-modal', event => {
+        const record = event.detail[0].record;
+
+        // Show modal
         var myModal = new bootstrap.Modal(document.getElementById('medicalDetailsModal'));
         myModal.show();
+        
+        // Load AI insights
+        loadMedicalInsights(record);
     });
+
+    function loadMedicalInsights(record) {
+        const insightBox = document.getElementById('ai-insight');
+        const insightText = document.getElementById('ai-insight-text');
+
+        if (!insightBox || !insightText) return; // safety check
+
+        insightText.textContent = "Generating insights...";
+
+        fetch("{{ route('ai.medical.insight') }}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            },
+            body: JSON.stringify({ record })
+        })
+        .then(async res => {
+            console.log("Response status:", res.status);
+            const text = await res.text(); // read raw text first for debugging
+            console.log("Raw response:", text);
+            
+            try {
+                const data = JSON.parse(text);
+                console.log("Parsed JSON:", data);
+                insightText.textContent = data.insight || "No insights generated.";
+            } catch (err) {
+                console.error("Error parsing JSON:", err);
+                insightText.textContent = "Invalid response format.";
+            }
+        })
+        .catch(error => {
+            console.error("Fetch error:", error);
+            insightText.textContent = "Unable to generate insight right now.";
+        });
+    }
 </script>

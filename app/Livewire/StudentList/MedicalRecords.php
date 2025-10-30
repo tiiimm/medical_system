@@ -42,7 +42,7 @@ class MedicalRecords extends Component
         $this->selectedMedicalRecord = MedicalResults::find($id);
 
         // Trigger the modal to open using a browser event
-        $this->dispatch('show-modal');
+        $this->dispatch('show-modal', ['record' => $this->selectedMedicalRecord]);
     }
     
     public function downloadFile($id)

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ChatBotController;
 use App\Livewire\Auth\ForgotPassword;
 use App\Livewire\Auth\Login;
 use App\Livewire\Auth\Register;
@@ -66,5 +67,8 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('notifications', Notifications::class)->name("notifications");
         Route::get('static-sign-in', StaticSignIn::class)->name('static-sign-in');
         Route::get('static-sign-up', StaticSignUp::class)->name('static-sign-up');
+
+        Route::post('/ai/medical-insight', [ChatBotController::class, 'generateMedicalInsights'])->name('ai.medical.insight');
+        Route::post('/ai/dashboard-insight', [ChatBotController::class, 'generateDashboardInsights'])->name('ai.dashboard.insight');
     });
 });
